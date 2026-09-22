@@ -1,4 +1,4 @@
-package Practica_1;
+package es.ucm.fdi.ici.c2627.practica0.grupoIndividual;
 
 import pacman.controllers.PacmanController;
 import pacman.game.Constants.MOVE;
