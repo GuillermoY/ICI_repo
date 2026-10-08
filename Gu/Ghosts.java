@@ -21,13 +21,11 @@ public class Ghosts extends GhostController {
 
         for (GHOST f : GHOST.values()) {
 
-            if (!game.doesGhostRequireAction(f))
-                continue;
+            if (!game.doesGhostRequireAction(f)) continue;
 
-            /*
-             * Si están demasiado juntos, se dispersan.
-             * Los fantasmas comestibles siguen huyendo.
-             */
+//              Si están demasiado juntos, se dispersan.
+//              Los fantasmas comestibles siguen huyendo.
+             
             if (dispersar && !game.isGhostEdible(f)) {
                 moves.put(f, movimientoDispersar(game, f));
             }
@@ -47,7 +45,7 @@ public class Ghosts extends GhostController {
         MOVE ultPac  = game.getPacmanLastMoveMade();
 
         if (game.getGhostEdibleTime(f) > 0) {
-            return huirConCriterio(game, nodo, ultimo, pacman);
+            return huirConCriterio(game, nodo, ultimo, pacman, f);
         }
 
         switch (f) {
@@ -56,18 +54,14 @@ public class Ghosts extends GhostController {
                         game.getShortestPath(nodo, pacman, ultimo));
 
             case PINKY: { // ROSA; intercepta: va al próximo cruce de Ms. Pac-Man
-                int destino = proximoCruceDe(game, pacman, ultPac);
-                return primerMovimientoDe(game,
-                        game.getShortestPath(nodo, destino, ultimo));
+                return primerMovimientoDe(game, game.getShortestPath(nodo, pacman, ultimo));
             }
 
             case INKY: { // AZUL; cubre la píldora de poder activa más cercana a Ms. Pac-Man
                 int[] pp = game.getActivePowerPillsIndices();
                 if (pp.length > 0) {
-                    int guardar = game.getClosestNodeIndexFromNodeIndex(
-                            pacman, pp, DM.PATH);
-                    return primerMovimientoDe(game,
-                            game.getShortestPath(nodo, guardar, ultimo));
+                    int guardar = game.getClosestNodeIndexFromNodeIndex(pacman, pp, DM.PATH);
+                    return primerMovimientoDe(game, game.getShortestPath(nodo, guardar, ultimo));
                 }
                 return primerMovimientoDe(game,
                         game.getShortestPath(nodo, pacman, ultimo));
@@ -87,17 +81,26 @@ public class Ghosts extends GhostController {
         return game.getMoveToMakeToReachDirectNeighbour(camino[0], camino[1]);
     }
 
-    private int proximoCruceDe(Game game, int nodo, MOVE ultimo) {
+    private MOVE huirConCriterio(Game game, int nodo, MOVE ultimo, int pacman, GHOST ghostType) {
+    	
+        for (GHOST f : GHOST.values()) {
+        	if (!game.isGhostEdible(f))
+        	{
+            	return game.getApproximateNextMoveAwayFromTarget( 
+                		game.getGhostCurrentNodeIndex(ghostType), 
+                		game.getGhostCurrentNodeIndex(f),
+                		game.getGhostLastMoveMade(ghostType),
+                		DM.PATH);
+        	}
+        }
+    	
+    	return game.getApproximateNextMoveAwayFromTarget( 
+                		game.getGhostCurrentNodeIndex(ghostType), 
+                		game.getPacmanCurrentNodeIndex(),
+                		game.getGhostLastMoveMade(ghostType),
+                		DM.PATH);
+            }
         
-    	
-    	return nodo;
-    }
-
-    private MOVE huirConCriterio(Game game, int nodo, MOVE ultimo, int pacman) {
-    	
-    	
-        return MOVE.NEUTRAL;
-    }
 
     private MOVE movimientoAleatorioLegal(Game game, int nodo, MOVE ultimo) {
         MOVE[] ops = game.getPossibleMoves(nodo, ultimo);
@@ -105,18 +108,14 @@ public class Ghosts extends GhostController {
     }
     
     private boolean necesitanDispersarse(Game game) {
-
         int activos = 0;
 
         for (GHOST f : GHOST.values()) {
-
-            if (game.getGhostLairTime(f) > 0)
-                continue;
+            if (game.getGhostLairTime(f) > 0) continue;
 
             int nodo = game.getGhostCurrentNodeIndex(f);
 
-            if (nodo == -1)
-                continue;
+            if (nodo == -1) continue;
 
             activos++;
         }
@@ -126,9 +125,7 @@ public class Ghosts extends GhostController {
             return false;
 
         for (GHOST f1 : GHOST.values()) {
-
-            if (game.getGhostLairTime(f1) > 0)
-                continue;
+            if (game.getGhostLairTime(f1) > 0)continue;
 
             int n1 = game.getGhostCurrentNodeIndex(f1);
 
@@ -136,20 +133,15 @@ public class Ghosts extends GhostController {
                 continue;
 
             for (GHOST f2 : GHOST.values()) {
+                if (f1 == f2) continue;
 
-                if (f1 == f2)
-                    continue;
-
-                if (game.getGhostLairTime(f2) > 0)
-                    continue;
+                if (game.getGhostLairTime(f2) > 0) continue;
 
                 int n2 = game.getGhostCurrentNodeIndex(f2);
 
-                if (n2 == -1)
-                    continue;
+                if (n2 == -1)continue;
 
-                int distancia =
-                        game.getShortestPathDistance(n1, n2);
+                int distancia = game.getShortestPathDistance(n1, n2);
 
                 if (distancia >= 0 &&
                     distancia < DISTANCIA_MINIMA_FANTASMAS) {
@@ -163,14 +155,11 @@ public class Ghosts extends GhostController {
     }
     private MOVE movimientoDispersar(Game game, GHOST fantasma) {
 
-        int nodo =
-                game.getGhostCurrentNodeIndex(fantasma);
+        int nodo = game.getGhostCurrentNodeIndex(fantasma);
 
-        MOVE ultimo =
-                game.getGhostLastMoveMade(fantasma);
+        MOVE ultimo = game.getGhostLastMoveMade(fantasma);
 
-        MOVE[] opciones =
-                game.getPossibleMoves(nodo, ultimo);
+        MOVE[] opciones = game.getPossibleMoves(nodo, ultimo);
 
         if (opciones == null || opciones.length == 0)
             return MOVE.NEUTRAL;
@@ -181,22 +170,12 @@ public class Ghosts extends GhostController {
 
         for (MOVE m : opciones) {
 
-            int vecino =
-                    game.getNeighbour(nodo, m);
+            int vecino = game.getNeighbour(nodo, m);
 
-            if (vecino == -1)
-                continue;
+            if (vecino == -1) continue;
 
-            double puntuacion =
-                    puntuacionDispersión(
-                            game,
-                            fantasma,
-                            vecino);
-
-            /*
-             * Cada fantasma tiene una preferencia distinta.
-             * Esto reduce muchísimo que todos elijan el mismo camino.
-             */
+            double puntuacion = puntuacionDispersión(game,fantasma,vecino);
+             
             switch (fantasma) {
 
                 case BLINKY:
@@ -236,42 +215,29 @@ public class Ghosts extends GhostController {
 
         double puntuacion = 0.0;
 
-        // ---------------------------------------------------------
         // 1. Alejarse de los demás fantasmas
-        // ---------------------------------------------------------
 
         for (GHOST otro : GHOST.values()) {
 
-            if (otro == fantasma)
-                continue;
+            if (otro == fantasma) continue;
 
-            if (game.getGhostLairTime(otro) > 0)
-                continue;
+            if (game.getGhostLairTime(otro) > 0) continue;
 
-            int nodoOtro =
-                    game.getGhostCurrentNodeIndex(otro);
+            int nodoOtro = game.getGhostCurrentNodeIndex(otro);
 
-            if (nodoOtro == -1)
-                continue;
+            if (nodoOtro == -1) continue;
 
-            int distancia =
-                    game.getShortestPathDistance(
-                            candidato,
-                            nodoOtro);
+            int distancia = game.getShortestPathDistance(candidato, nodoOtro);
 
-            if (distancia < 0)
-                continue;
-
-            /*
-             * Cuanto más lejos esté el candidato del otro
-             * fantasma, mejor.
-             */
+            if (distancia < 0) continue;
+            
+//              Cuanto más lejos esté el candidato del otro
+//              fantasma, mejor.
+             
             puntuacion += distancia * 10.0;
 
-            /*
-             * Penalización muy fuerte si siguen prácticamente
-             * juntos.
-             */
+//              Penalización fuerte si siguen juntos.
+             
             if (distancia <= 2)
                 puntuacion -= 500;
 
@@ -282,20 +248,15 @@ public class Ghosts extends GhostController {
                 puntuacion -= 50;
         }
 
-        // ---------------------------------------------------------
         // 2. Preferir intersecciones
-        // ---------------------------------------------------------
 
         if (game.isJunction(candidato)) {
             puntuacion += 30;
         }
 
-        // ---------------------------------------------------------
         // 3. Evitar que todos se vayan hacia Pac-Man
-        // ---------------------------------------------------------
 
-        int pacman =
-                game.getPacmanCurrentNodeIndex();
+        int pacman = game.getPacmanCurrentNodeIndex();
 
         int distanciaPacman =
                 game.getShortestPathDistance(
@@ -303,14 +264,22 @@ public class Ghosts extends GhostController {
                         pacman);
 
         if (distanciaPacman >= 0) {
-
-            /*
-             * Durante la dispersión no queremos que todos
-             * terminen otra vez en Pac-Man.
-             */
             puntuacion += distanciaPacman * 2.0;
         }
+        
+        // 4. Evitar que todos se vayan hacia Power Pills
+        int[] pp = game.getActivePowerPillsIndices();
 
+        for (int p : pp)
+        {
+	        int distanciaPP = game.getShortestPathDistance(
+	                        candidato,
+	                        p);
+	
+	        if (distanciaPP >= 0) {
+	            puntuacion += distanciaPP * 2.0;
+	        }
+        }        
         return puntuacion;
     }
 

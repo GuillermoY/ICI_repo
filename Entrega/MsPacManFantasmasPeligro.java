@@ -15,7 +15,7 @@ import pacman.controllers.PacmanController;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 
-public class MsPacManViejo extends PacmanController {
+public class MsPacManFanstasmasPeligro extends PacmanController {
 
     public static final int CERCA                       = 30;
     public static final int HOLGURA                     = 4;
@@ -50,174 +50,12 @@ public class MsPacManViejo extends PacmanController {
         // Recalcular costes
         repintarCostes(game);
 
-        // Dibujar información de depuración
-        dibujarDecisiones(game, nodo, last);
-
         if (options.length == 1) return options[0];
 
 //        return decide(game, nodo, last, options);
         return decidirConCostes(game, nodo, last, options);
     }
     
-    private void dibujarDecisiones(Game game, int nodoInicial, MOVE ultimo) { // PINTAR
-
-        // =========================================================
-        // 1. DIBUJAR TODOS LOS NODOS SEGÚN SU COSTE
-        // =========================================================
-
-        double maxCoste = 0;
-
-        for (double coste : costes.values()) {
-            if (coste > maxCoste) {
-                maxCoste = coste;
-            }
-        }
-
-        for (Map.Entry<Integer, Double> entrada : costes.entrySet()) {
-
-            int nodo = entrada.getKey();
-            double coste = entrada.getValue();
-
-            Color color;
-
-            if (coste <= 0.25) {
-                color = Color.GREEN;
-            }
-            else if (coste <= 0.50) {
-                color = Color.YELLOW;
-            }
-            else if (coste <= 1.0) {
-                color = Color.ORANGE;
-            }
-            else {
-                color = Color.RED;
-            }
-
-            GameView.addPoints(
-                game,
-                color,
-                nodo
-            );
-        }
-
-
-        // =========================================================
-        // 2. MARCAR LAS OPCIONES INMEDIATAS
-        // =========================================================
-
-        MOVE[] opciones = game.getPossibleMoves(nodoInicial, ultimo);
-
-        for (MOVE movimiento : opciones) {
-
-            int vecino = game.getNeighbour(nodoInicial, movimiento);
-
-            if (vecino == -1)
-                continue;
-
-            double coste = costes.getOrDefault(
-                vecino,
-                Double.MAX_VALUE
-            );
-
-            // Verde = elección actual
-            if (vecino == obtenerMejorVecino(game, nodoInicial, opciones)) {
-
-                GameView.addPoints(
-                    game,
-                    Color.GREEN,
-                    vecino
-                );
-
-                GameView.addLines(
-                    game,
-                    Color.GREEN,
-                    nodoInicial,
-                    vecino
-                );
-            }
-
-            // Azul = alternativas
-            else {
-
-                GameView.addPoints(
-                    game,
-                    Color.BLUE,
-                    vecino
-                );
-            }
-        }
-
-
-        // =========================================================
-        // 3. PREDECIR VARIAS DECISIONES HACIA DELANTE
-        // =========================================================
-
-        int actual = nodoInicial;
-        MOVE movimientoAnterior = ultimo;
-
-        int profundidad = 8;
-
-        for (int i = 0; i < profundidad; i++) {
-
-            MOVE[] posibles =
-                game.getPossibleMoves(actual, movimientoAnterior);
-
-            if (posibles == null || posibles.length == 0)
-                break;
-
-            int siguiente = obtenerMejorVecino(game, actual, posibles);
-
-            if (siguiente == -1)
-                break;
-
-
-            // Línea que representa la futura trayectoria
-            GameView.addLines(
-                game,
-                Color.MAGENTA,
-                actual,
-                siguiente
-            );
-
-            // Punto del siguiente nodo
-            GameView.addPoints(
-                game,
-                Color.MAGENTA,
-                siguiente
-            );
-
-
-            // Actualizar dirección
-            MOVE siguienteMovimiento = game.getMoveToMakeToReachDirectNeighbour(actual, siguiente);
-
-            movimientoAnterior = siguienteMovimiento;
-            actual = siguiente;
-        }
-    }
-
-    private int obtenerMejorVecino(Game game, int nodo, MOVE[] opciones) { // PINTAR
-
-        int mejorNodo = -1;
-        double mejorCoste = Double.MAX_VALUE;
-
-        for (MOVE movimiento : opciones) {
-
-            int vecino = game.getNeighbour(nodo, movimiento);
-
-            if (vecino == -1) continue;
-
-            double coste = costes.getOrDefault(vecino, Double.MAX_VALUE);
-
-            if (coste < mejorCoste) {
-                mejorCoste = coste;
-                mejorNodo = vecino;
-            }
-        }
-
-        return mejorNodo;
-    }
-
-
     private MOVE elegirPorCoste(Game game, int nodo, MOVE[] opciones) {
         MOVE mejor = opciones[0];
         double mejorCoste = Double.MAX_VALUE;

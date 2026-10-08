@@ -8,7 +8,7 @@ import pacman.game.Constants.MOVE;
 import pacman.game.Constants.DM;
 import pacman.game.Game;
 
-public class Ghosts extends GhostController {
+public class GhostConComportamientoInicial extends GhostController {
 	private EnumMap<GHOST, MOVE> moves = new EnumMap<GHOST, MOVE>(GHOST.class);
 
     @Override

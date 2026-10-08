@@ -20,7 +20,7 @@ public class MsPacMan extends PacmanController {
     public static final int CERCA                       = 30;
     public static final int HOLGURA                     = 6;
     public static final int FANTASMAS_PARA_PILDORA      = 2;
-    public static final int PROFUNDIDAD_SEGURA          = 3;
+    public static final int PROFUNDIDAD_SEGURA          = 150;
 
     public static final boolean DEBUG                   = true;
 
@@ -87,7 +87,7 @@ public class MsPacMan extends PacmanController {
             precomputarGrado(game);
         }
     }
-
+    // Calcula cuántos vecinos tiene cada nodo para las direcciones para calcular las intersecciones
     private void precomputarGrado(Game game) {
         for (int i = 0; i < nNodos; i++) {
             int g = 0;
@@ -255,7 +255,6 @@ private double costeInterseccion(Game game, int interseccion) {
     private MOVE decidirConLookahead(Game game, int nodo, MOVE ultimo, MOVE[] opciones) {
         MOVE mejor = opciones[0];
         double mejorCoste = Double.MAX_VALUE;
-
         for (MOVE m : opciones) {
             int v = game.getNeighbour(nodo, m);
             if (v == -1) continue;
