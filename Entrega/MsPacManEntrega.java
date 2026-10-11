@@ -13,13 +13,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.ArrayList;
 
-public class MsPacMan extends PacmanController {
+public class MsPacManEntrega extends PacmanController {
 
   
     //  PARÁMETROS
     public static final int CERCA                       = 30;
     public static final int HOLGURA                     = 6;
-    public static final int FANTASMAS_PARA_PILDORA      = 2;
     public static final int PROFUNDIDAD_SEGURA          = 150;
 
     public static final boolean DEBUG                   = true;
