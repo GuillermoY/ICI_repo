@@ -187,7 +187,6 @@ La respuesta:
       }
 
       int nodoPacman = game.getPacmanCurrentNodeIndex();
-      MOVE ultimoPacman = game.getPacmanLastMoveMade();
 
       double coste = 0.0;
 
@@ -205,7 +204,7 @@ La respuesta:
 
           MOVE ultimoFantasma = game.getGhostLastMoveMade(g);
 
-          int tiempoPacman = game.getShortestPathDistance(nodoPacman, interseccion, ultimoPacman);
+          int tiempoPacman = game.getShortestPathDistance(nodoPacman, interseccion, game.getPacmanLastMoveMade());
           int tiempoFantasma = game.getShortestPathDistance(nodoFantasma, interseccion, ultimoFantasma);
 
           if (tiempoPacman < 0 || tiempoFantasma < 0) {
@@ -225,6 +224,10 @@ La respuesta:
 
       return coste;
     }
+
+Corregido a mano: sustituimos los contsantes locales a constantes de la clase para un mejor manejo en caso de realizar cambios a estos parámetos: `HOLGURA` y `PELIGRO_BASE`.
+Incluimos el 0 dentro del margen porque queremos que el pacman pueda evitar el caso en el que el pacman llegue a su vez con el fantasma en la intersección.
+Por último cambiamos el nombre de la variable coste a peligroInterseccion además de poner unos comentarios.
 
 Partida:
 
