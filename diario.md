@@ -48,7 +48,7 @@ Codigo : [MsPacManNodosInicial](https://github.com/GuillermoY/ICI_repo/blob/8117
 
 Lo que contiene: Su arquitectura base toma es una decisión secuencial (weakGhost → powerPill → pill segura → huir) con `caminoSeguro` que devuelve true o false.
 
-IA: Si
+Apoyo de IA: Si
 
 Prompt : Escribe solo el método private MOVE weakGhost(Game game, int nodo, MOVE ultimo) para un controlador de Pacman. Archivos que usamos: pacman.game.Game, pacman.controllers.PacmanController, pacman.game.Constants.MOVE, pacman.game.Constants.GHOST.
 
@@ -99,7 +99,7 @@ La respuesta:
       return game.getMoveToMakeToReachDirectNeighbour(mejorCamino[0], mejorCamino[1]);
     }
 
-Corregido a mano: le cambiamos para que tenga en vez de un vector de mejorCamino a un solo int de la mejor distancia, tambiñen separamos la caden de condiciones de los if's dentro el for y en vez de llamarlo mejor fantasma tenemos objetivo. Además pasamos la condición de `if (camino != null && camino.length >= 2)` fuera del recorrido.
+Corregido a mano: le cambiamos para que tenga en vez de un vector de mejorCamino a un solo int de la mejor distancia, también separamos la caden de condiciones de los if's dentro el for y en vez de llamarlo mejor fantasma tenemos objetivo. Además pasamos la condición de `if (camino != null && camino.length >= 2)` fuera del recorrido.
 
 Problema: el Pacman no puede distinguir entre "fantasma a 5" de "fantasma a 25" de él.
 
@@ -127,7 +127,7 @@ Codigo : [MsPacManFantasmasPeligro](https://github.com/GuillermoY/ICI_repo/blob/
 
 Lo que contiene: Sustituimos la desición secuencial por un mapa de pesos por nodo en el que se tiene por un lado un peligro gradual y el apetito de los comestibles.
 
-IA: No
+Apoyo de IA: No
 
 Problema: el uso de `Map<Integer,Double>` y N llamadas a `getShortestPathDistance` es lento y sin lookahead, entra en callejones cerrados sin tener en cuenta si hay o no un fantasma en tal intersección.
 
@@ -151,7 +151,7 @@ Tiempo de partida:
 
 Comparación con v1 (R2):
 
-D      = 2386,7 − 3237,8 = −851,1
+D      = 2386,7 − 3237,8 = −851,1 <br>
 ET_D   = √(120,43² + 160,97²) = √(14503 + 25911) = √40414 ≈ 201,0
 2·ET_D = 402,1
 
@@ -163,15 +163,15 @@ Codigo : [MsPacManEntrega](https://github.com/GuillermoY/ICI_repo/blob/8117dca11
 
 Lo que contiene: Tiene unos arrays nativos, una busqueda en anchura, los costes de intersecciones, penalizaciones en los callejones y un lookahead de profundidad 3.
 
-IA : Si
+Apoyo de IA : Si
 
-Prompt: Escribe solo el método private double costeInterseccion(Game game, int interseccion) para un controlador de Ms. Pac-Man. No escribas la clase completa ni otros métodos.
+Prompt: Escribe solo el método private *double costeInterseccion(Game game, int interseccion)* para un controlador de Ms. Pac-Man. No escribas la clase completa ni otros métodos.
 
 El controlador calcula un `array coste[]` por nodo que combina distancia a píldoras, peligro de fantasmas, apetito de comestibles y penalización de callejones. Este método añade un coste extra a los nodos que son intersecciones y que resultan peligrosas porque un fantasma no comestible puede llegar antes o casi a la vez que Ms. Pac-Man.
 
 Se tiene las constantes: `HOLGURA = 6` (margen mínimo de ventaja que pacman tiene sobre el fantasma) y `PELIGRO_BASE = 500.0`.
 
-Se tiene los siguientes métodos ya implementados : esInterseccion(int nodo), game.getPacmanCurrentNodeIndex(), game.getPacmanLastMoveMade(), game.getGhostCurrentNodeIndex(g), game.getGhostLastMoveMade(g), game.getGhostLairTime(g), game.isGhostEdible(g), game.getShortestPathDistance(int origen, int destino, MOVE ultimoMovimiento) .
+Se tiene los siguientes métodos ya implementados : esInterseccion(int nodo), game.getPacmanCurrentNodeIndex(), game.getPacmanLastMoveMade(), game.getGhostCurrentNodeIndex(g), game.getGhostLastMoveMade(g), game.getGhostLairTime(g), game.isGhostEdible(g), game.getShortestPathDistance(int origen, int destino, MOVE ultimoMovimiento).
 
 Si no se trata de una intersección devuelve 0.0, para cada fantasma de g en GHOST.values() ignora si esta ya muerto, si es comestible y si su nodo es -1. También calcula el tiempo en el que el pacman llega a la intersección y del fantasma, si alguno de los dos es menor a 0, se ignora al fantasma.
 El margen al que se calcula es tiempoFantasma - tiempoPacman y si marguen es menor o igual a la `HOLGURA`, entonces ver si es menor a 0 o mayor a 0. En caso del primero entonces se le suma `PELIGRO_BASE * 5.0` sino entonces `PELIGRO_BASE * (HOLGURA + 1 - margen)`.
@@ -247,7 +247,7 @@ Tiempo de partida:
 
 Comparación con v2 (R2):
 
-D      = 3013,3 − 2386,7 = 626,6
+D      = 3013,3 − 2386,7 = 626,6<br>
 ET_D   = √(171,06² + 120,43²) = √(29261 + 14503) = √43764 ≈ 209,2
 2·ET_D = 418,4
 
@@ -263,7 +263,7 @@ Codigo : [GhostConComportamientoInicial](https://github.com/GuillermoY/ICI_repo/
 
 Lo que contiene: Cada fantasma persigue a Pacman mientras que INKY campea por la power pill más cercana al Pacman y SUE realiza un movimiento aleatorio cada 20 ticks y en la huida es in movimiento neutral.
 
-Prompt a la IA: no se usó IA para este controlador
+Apoyo de IA: no se usó IA para este controlador
 
 Problema: los fantasmas no se dispersan, por lo tanto son presa fácil para el Pacman cuando estas se vuelven vulnerables y cuanddo son comestibles no huyen.
 
@@ -289,7 +289,7 @@ Codigo : [GhostEntrega](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d
 
 Lo que contiene: Tiene una función de dispersión cuanddo están a menos de 5 nodos entre sí con una huida real, no neutral, con `getApproximateNextMoveAwayFromTarget`, además de que tiene una preferencia por intersecciones.
 
-IA: No
+Apoyo de IA: No
 
 Partida:
 
