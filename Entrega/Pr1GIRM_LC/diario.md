@@ -339,3 +339,83 @@ Comparación con v3 (PROFUNDIDAD_SEGURA=3):
 
 Problema: el tiempo por turno puede acercarse al límite de 40 ms.
 Por qué: 150 niveles de lookahead es casi búsqueda exhaustiva del mapa.
+
+---
+## **REENTREGA**
+
+
+#### **1) Pinky corta el paso** – Miércoles 14 de octubre del 2026 (línea base)
+
+Codigo : [GhostEntrega](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d916295149dd04698fef361a7db90/Li/P1Viejo/GhostsEntrega.java)
+
+Lo que contiene: El fantasma PINKY obtiene el cruce más cercano al que se encuentra PacMan. Además, en huir con criterio se buscará al fantasma más cercano para dirigirse hacia él, reduciendo las posibilidades de ser comido.
+
+Apoyo de IA: se usó IA para este avance
+
+Concretamente en la parte de proximoCruceDe para encontrar cuando sería la próxima intersección que se dirige el pacMan para interceptar con él, que realiza algo parecido al pacman viendo cuantos nodos vecinos tiene el nodo intersección.
+
+Partida:
+
+| Rival (MsPacMan) | Puntos | Media de puntos | Desviación |
+| :---: | :---: | :---: | :---: |
+| MsPacMan P1 v1 | 7420.0 ± 830.0 | 3151.5 | 1272.6329781086522 |
+| MsPacMan P1 v2 | 6000.0 ± 740.0 | 2229.2 | 1018.4318307768051 |
+| MsPacMan P1 v3 | 10810.0 ± 1040.0 | 4918.0 | 2061.311242972308 |
+
+Tiempo de partida:
+
+| Rival (MsPacMan) | Tiempo | Media de tiempo | Desviación |
+| :---: | :---: | :---: | :---: |
+| MsPacMan P1 v1 | 4001.0 ± 90.0 | 1637.0 | 935.108809095757 |
+| MsPacMan P1 v2 | 1576.0 ± 67.0 | 895.52 | 406.46230533293704 |
+| MsPacMan P1 v3 | 4001.0 ± 66.0 | 1644.74 | 1263.133906223131 |
+
+#### **2) Lo bueno de la primera** – Miércoles 14 de octubre del 2026 (línea base)
+Codigo : [MsPacManV4](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d916295149dd04698fef361a7db90/Li/P1Viejo/MsPacManV4.java)
+Codigo : [MsPacManV5](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d916295149dd04698fef361a7db90/Li/P1Viejo/MsPacManV5.java)
+
+Lo que contiene: El fantasma PINKY obtiene el cruce más cercano al que se encuentra PacMan. Además, en huir con criterio se buscará al fantasma más cercano para dirigirse hacia él, reduciendo las posibilidades de ser comido.
+
+Apoyo de IA: no
+
+Concretamente en la parte de proximoCruceDe para encontrar cuando sería la próxima intersección que se dirige el pacMan para interceptar con él, que realiza algo parecido al pacman viendo cuantos nodos vecinos tiene el nodo intersección.
+
+Partida:
+
+| Rival (MsPacManV4) | Puntos | Media de puntos | Desviación |
+| :---: | :---: | :---: | :---: |
+| R1 | 14080.0 ± 970.0 | 6703.3 | 3415.9456903756477 |
+| R2 | 11710.0 ± 1120.0 | 5028.7 | 2062.1767723461635 |
+| R3 | 11280.0 ± 2630.0 | 6687.9 | 1882.8552866067616 |
+
+
+| Rival (MsPacManV5) | Puntos | Media de puntos | Desviación |
+| :---: | :---: | :---: | :---: |
+| R1 | 13110.0 ± 950.0 | 6028.2 | 3061.391503776337 |
+| R2 | 11880.0 ± 1030.0 | 4959.6 | 2332.6215018101557 |
+| R3 | 12530.0 ± 2460.0 | 6779.5 | 2176.464733776713 |
+
+Tiempo de partida:
+
+| Rival (MsPacManV4) | Tiempo | Media de tiempo | Desviación |
+| :---: | :---: | :---: | :---: |
+| R1 | 4001.0 ± 45.0 | 2051.72 | 1389.879386381016 |
+| R2 | 4001.0 ± 70.0 | 1802.31 | 1159.944257586144 |
+| R3 | 4001.0 ± 37.0 | 1289.91 | 849.0214461723601 |
+
+| Rival (MsPacManV5) | Tiempo | Media de tiempo | Desviación |
+| :---: | :---: | :---: | :---: |
+| R1 | 4001.0 ± 22.0 | 2121.45 | 1476.819448796445 |
+| R2 | 4001.0 ± 14.0 | 1796.49 | 1261.3402643716931 |
+| R3 | 4001.0 ± 4.0 | 1099.92 | 837.1648604882814 |
+
+
+Comparación de V4 y V5:
+
+| Rival  | Media V4 | Media V5 | Diferencia V5 − V4 |
+| :---: | :---: | :---: | :---: |
+| R1 | 6703,3 | 6028,2 | −675,1 |
+| R2 | 5028,7 | 4959,6 | −69,1 |
+| R3 | 6687,9 | 6779,5 | +91,6 |
+
+Decisión Final: Con los resultados obtenidos nos quedaremos con la versión V4. La V5 empeora con las versiones con fantasmas más inteligentes pero sorprendentemente mejora con fantasmas impredecibles.
