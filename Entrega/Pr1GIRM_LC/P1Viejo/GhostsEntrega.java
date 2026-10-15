@@ -8,7 +8,7 @@ import pacman.game.Constants.MOVE;
 import pacman.game.Constants.DM;
 import pacman.game.Game;
 
-public class Ghosts extends GhostController {
+public class GhostsEntrega extends GhostController {
 	private EnumMap<GHOST, MOVE> moves = new EnumMap<GHOST, MOVE>(GHOST.class);
     public static final double DISTANCIA_MINIMA_FANTASMAS             = 5.0;
 

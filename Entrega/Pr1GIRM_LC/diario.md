@@ -371,8 +371,8 @@ Tiempo de partida:
 | MsPacMan P1 v3 | 4001.0 ± 66.0 | 1644.74 | 1263.133906223131 |
 
 #### **2) Lo bueno de la primera** – Miércoles 14 de octubre del 2026 (línea base)
-Codigo : [MsPacManV4](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d916295149dd04698fef361a7db90/Li/P1Viejo/MsPacManV4.java)
-Codigo : [MsPacManV5](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d916295149dd04698fef361a7db90/Li/P1Viejo/MsPacManV5.java)
+Codigo : [MsPacManV4](https://github.com/GuillermoY/ICI_repo/blob/8e9b5c63a73b3ba2bac97cde28513818001ce1bb/Entrega/Pr1GIRM_LC/MsPacManV4.java)
+Codigo : [MsPacManV5](https://github.com/GuillermoY/ICI_repo/blob/8e9b5c63a73b3ba2bac97cde28513818001ce1bb/Entrega/Pr1GIRM_LC/MsPacManV5.java)
 
 Lo que contiene: El fantasma PINKY obtiene el cruce más cercano al que se encuentra PacMan. Además, en huir con criterio se buscará al fantasma más cercano para dirigirse hacia él, reduciendo las posibilidades de ser comido.
 
@@ -419,3 +419,56 @@ Comparación de V4 y V5:
 | R3 | 6687,9 | 6779,5 | +91,6 |
 
 Decisión Final: Con los resultados obtenidos nos quedaremos con la versión V4. La V5 empeora con las versiones con fantasmas más inteligentes pero sorprendentemente mejora con fantasmas impredecibles.
+
+#### **3) El mapa que no engaña** – Jueves 15 de octubre del 2026 (línea base)
+
+Codigo : [MsPacManEntrega](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d916295149dd04698fef361a7db90/Li/P1Viejo/MsPacManEntrega.java)
+
+Lo que contiene: El fantasma PINKY obtiene el cruce más cercano al que se encuentra PacMan. Además, en huir con criterio se buscará al fantasma más cercano para dirigirse hacia él, reduciendo las posibilidades de ser comido.
+
+Apoyo de IA: no
+
+### Antes (V3): Con profundidad intersecciones >= 2 
+![alt text](image.png)<br>
+### Después (V3.5): Con profundidad intersecciones >= 3 
+![alt text](image-1.png)
+
+Partidas (PROFUNDIDAD_SEGURA 5):
+
+| Rival (MsPacManV3) | Puntos | Media de puntos | Desviación |
+| :---: | :---: | :---: | :---: |
+| R1 | 15590.0 ± 760.0 | 4002.8 | 2755.4706210435893 |
+| R2 | 12840.0 ± 800.0 | 3433.3 | 2067.8501279142915 |
+| R3 | 12200.0 ± 820.0 | 5707.3 | 2684.457643246367 |
+
+
+| Rival (MsPacManV3.5) | Puntos | Media de puntos | Desviación |
+| :---: | :---: | :---: | :---: |
+| R1 | 13980.0 ± 1470.0 | 6478.2 | 3044.4154470343587 |
+| R2 | 10350.0 ± 930.0 | 5064.2 | 2221.3423823890766 |
+| R3 | 12270.0 ± 1740.0 | 7107.8 | 1974.78528688385 |
+
+Tiempo de partida:
+
+| Rival (MsPacManV3) | Tiempo | Media de tiempo | Desviación |
+| :---: | :---: | :---: | :---: |
+| R1 | 1619.0 ± 78.0 | 811.52 | 422.72553552374666 |
+| R2 | 1836.0 ± 71.0 | 844.55 | 439.69795360456294 |
+| R3 | 1876.0 ± 85.0 | 895.67 | 461.3877410332416 |
+
+| Rival (MsPacManV3.5) | Tiempo | Media de tiempo | Desviación |
+| :---: | :---: | :---: | :---: |
+| R1 | 4001.0 ± 65.0 | 2075.42 | 1337.6007631637183 |
+| R2 | 4001.0 ± 73.0 | 1621.98 | 1197.729864317822 |
+| R3 | 4001.0 ± 22.0 | 1306.57 | 880.0121470121245 |
+
+
+Comparación de V3 y V3.5:
+
+| Rival  | Media V3 | Media V3.5 | Diferencia V3 − V3.5 |
+| :---: | :---: | :---: | :---: |
+| R1 | 4002.8 | 6478.2 | -2475,4 |
+| R2 | 3433.3 | 5064.2 | -1630,9 |
+| R3 | 5707.3 | 7107.8 | -1400,5 |
+
+Decisión Final: Ha habido una mejora al cambiar el número de intersecciones a >= 3, no solo en comportamiento sino también en rendimiento, procesando los casos mucho más eficientemente y rápidamente.

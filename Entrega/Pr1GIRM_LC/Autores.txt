@@ -1,0 +1,6 @@
+Guillermo Isaac Ramos Medina
+Liling Chen
+
+MsPacMan a enviar: MsPacManEntrega (Dentro de P1Viejo)
+
+Ghosts a enviar: GhostEntrega (Fuera de P1Viejo)
