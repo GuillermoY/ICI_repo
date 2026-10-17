@@ -37,9 +37,6 @@ Ejecutor:
         System.out.println("==============================================");
     } 
 
-## MAQUINA DE ESTADOS
-Realizamos unos cambios para tener otros estados  
-
 
 ## **MS PACMAN**
 ### Versiones
@@ -96,6 +93,24 @@ Tiempo de partida MsPacManV0Me:
 | R2 | 4001.0 ± 181.0 | 2037.76 | 1322.622912925645 |
 | R3 | 2315.0 ± 189.0 | 1306.38 | 504.3864282270009 |
 
+---
+
+**USANDO DE RIVAL R3**
+
+===== MsPacManV4 =====
+|Pacman|Media|Min|Max|Desv|Partidas|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+MsPacManV4 | Media: 2797.8 | Min: 1100.0 | Max: 6430.0 | Desv.: 1055.9632221486752 | N: 50
+MsPacManV4 Ticks | Media: 1300.0 | Min: 175.0 | Max: 4001.0 | Desv.: 744.452243503331 | N: 50
+
+===== MsPacManV0Me =====
+|Pacman|Media|Min|Max|Desv|Partidas|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+MsPacManV0Me | Media: 3150.4 | Min: 1190.0 | Max: 7230.0 | Desv.: 1390.6846940868181 | N: 50
+MsPacManV0Me Ticks | Media: 1306.38 | Min: 189.0 | Max: 2315.0 | Desv.: 504.3864282270009 | N: 50
+
+**Comparación con la MsPacManV4 y MsPacManV0Me del pacman**
+
 D      = 3150,4 − 2797,8 = +352,6
 
 ET_D   = √(196,67² + 149,33²) ≈ 246,9
@@ -103,3 +118,16 @@ ET_D   = √(196,67² + 149,33²) ≈ 246,9
 2·ET_D = 493,9
 
 |D| = 352,6 < 493,9 → no se distingue de ruido
+
+## **GHOST**
+### Versiones
+
+#### **1) GhostV0ME v.1.0** – Sábado 17 de octubre del 2026 (línea base)
+
+Codigo : [MsPacManV0Me](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d916295149dd04698fef361a7db90/Li/P1Viejo/MsPacManEntrega.java)
+
+Contenido/Cambios:
+
+Apoyo de la IA:
+
+Partidas
