@@ -4,9 +4,9 @@ Nombres de los integrantes : Guillermo Isaac Ramos Medina y Liling Chen
 
 Medimos siempre 100 partidas contra:
 
-- R1: GhostConComportamientoInicial
-- R2: GhostEntrega
-- R3: GhostRandom
+- R1: rival-basico
+- R2: rival-intermedio
+- R3: rival-avanzado
   
 Ejecutor:
 
@@ -36,17 +36,26 @@ Ejecutor:
 
         System.out.println("==============================================");
     } 
-    
+
+## MAQUINA DE ESTADOS
+Realizamos unos cambios para tener otros estados  
+
+
 ## **MS PACMAN**
 ### Versiones
 
-#### **1) MsPacManEntrega v.1.0** – Sábado 17 de octubre del 2026 (línea base)
+#### **1) MsPacManV0ME v.1.0** – Sábado 17 de octubre del 2026 (línea base)
 
 Codigo : [MsPacManEntrega](https://github.com/GuillermoY/ICI_repo/blob/8117dca11b6d916295149dd04698fef361a7db90/Li/P1Viejo/MsPacManEntrega.java)
 
 
-Contenido/ Cambios:
+Contenido/Cambios
+Implementamos una maquina de estados base con los siguientes superestados: Con poder y sin poder.
+Dentro de cada se tienes los siguientes estados principales:
 
+* Con poder:
+  * 
+* Sin poder:
 
 
 Apoyo de IA: No
