@@ -416,3 +416,15 @@ ET_D   = √(1840,3² + 4387,7²) ≈ 4757,7
 2·ET_D = 9515,4
 
 |D| < 2·ET_D → no se distingue de ruido
+
+# PARTE DE LA REENTREGA
+
+**Viernes 06 de Noviembre del 2026 (DEL SWITCH A LA MAQUINA)**
+
+**MsPacManV2Me**
+
+Contenido/Cambios: Se aplica la libreria de fms para una máquina de estados, tenemos de base a MsPacManV0Me para este cambio.
+
+AI:
+
+
