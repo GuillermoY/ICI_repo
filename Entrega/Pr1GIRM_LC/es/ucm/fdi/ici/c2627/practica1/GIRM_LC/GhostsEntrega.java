@@ -1,4 +1,4 @@
-package es.ucm.fdi.ici.c2627.practica1.grupoIndividual;
+package es.ucm.fdi.ici.c2627.practica1.GIRM_LC;
 
 import java.util.EnumMap;
 
@@ -365,7 +365,7 @@ public class GhostsEntrega extends GhostController {
 
 
     public String getName() {
-    	return "Ghosts";
+    	return "GhostsEntrega_GIRM_LC";
     }
 
 }

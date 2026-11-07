@@ -1,4 +1,4 @@
-package es.ucm.fdi.ici.c2627.practica1.grupoIndividual;
+package es.ucm.fdi.ici.c2627.practica1.GIRM_LC;
 
 import pacman.controllers.PacmanController;
 import pacman.game.Constants.MOVE;
@@ -373,6 +373,6 @@ public class MsPacManViejo extends PacmanController {
     }
       
     public String getName() {
-    	return "MsPacMan";
+    	return "MsPacManFantasmasPeligro_GIRM_LC";
     }
 }

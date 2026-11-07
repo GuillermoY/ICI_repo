@@ -1,4 +1,4 @@
-package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+package es.ucm.fdi.ici.c2627.practica1.GIRM_LC;
 
 import pacman.controllers.PacmanController;
 import pacman.game.Constants.MOVE;
@@ -14,13 +14,14 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.text.*;
 
-public class MsPacManV1Me extends PacmanController {
+public class MsPacManV5 extends PacmanController {
 
   
     //  PARÁMETROS
     public static final int CERCA                       = 30;
     public static final int HOLGURA                     = 6;
     public static final int PROFUNDIDAD_SEGURA          = 5;
+    public static final int FANTASMAS_PARA_PILDORA   	= 2;
 
     public static final boolean DEBUG                   = false;
 
@@ -43,15 +44,6 @@ public class MsPacManV1Me extends PacmanController {
     private double[] callejon;      // penalización por callejones sin salida
     private int[]    grado;         // grado de cada nodo (nº vecinos)
 
-    //  ESTADOS DE ESTRATEGIA
-    private enum Fase {
-        CAZA,       // hay fantasmas comestibles -> perseguirlos
-        POWER,      // power pill disponible y fantasmas no comestibles cerca -> ir a por ella
-        HUIDA,      // fantasmas no comestibles muy cerca -> sobrevivir
-        NORMAL      // comer píldoras normales
-    }
-    private Fase faseActual = Fase.NORMAL;
-    
     @Override
     public MOVE getMove(Game game, long timeDue) {
 
@@ -61,12 +53,10 @@ public class MsPacManV1Me extends PacmanController {
 
         asegurarBuffers(game);
 
-        faseActual = detectarFase(game); //Detectar fase
-        
         calcularDistanciasPildoras(game);
         calcularPeligroYApetito(game);
         calcularCallejones(game);
-        combinarCoste(faseActual);
+        combinarCoste();
 
         // Dibujar todos los nodos en cada turno.
         if (DEBUG) {
@@ -173,8 +163,38 @@ public class MsPacManV1Me extends PacmanController {
             dist[p] = 0;
             cola.add(p);
         }
+        
+        int fantasmasCerca = 0;
+        
+        for (GHOST otro : GHOST.values()) {
+            if (game.getGhostLairTime(otro) > 0) 
+                continue;
 
-        if (cola.isEmpty()) { Arrays.fill(dist, 0); return; }
+            int nodoOtro = game.getGhostCurrentNodeIndex(otro);
+            if (nodoOtro == -1) 
+            	continue;
+
+            int distancia = game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), nodoOtro);
+
+            if (distancia < CERCA) {
+                fantasmasCerca++;
+            }
+        }
+        
+        if (fantasmasCerca >= FANTASMAS_PARA_PILDORA)
+        {
+            for (int p : game.getActivePowerPillsIndices()) {
+                if (dist[p] != 0) {
+                    dist[p] = 0;
+                    cola.add(p);
+                }
+            }
+        }
+
+        if (cola.isEmpty()) {
+            Arrays.fill(dist, 0);
+            return;
+        }
 
         recorrerAnchura(game, cola, dist);
     }
@@ -302,41 +322,13 @@ private double costeInterseccion(Game game, int interseccion) {
     }
     
 //  COSTE COMBINADO SEGÚN FASE (Maquina de estados)
-    private void combinarCoste(Fase fase) {
-        switch (fase) {
-        case CAZA:
-        	for (int i = 0; i < nNodos; i++) {
-	            coste[i] = PESO_DISTANCIA * dist[i]
-	                     + PESO_PELIGRO * peligro[i]
-	                     - apetito[i] * 2.0f
-	                     + callejon[i];
-	        }
-        	break;
-        
-        case POWER:
-        	for (int i = 0; i < nNodos; i++) {
-	            coste[i] = PESO_DISTANCIA * dist[i]
-	                     + PESO_PELIGRO * peligro[i] * 1.2f
-	                     - apetito[i]
-	                     + callejon[i];
-	        }
-        	break;
-        case HUIDA:
-        	for (int i = 0; i < nNodos; i++) {
-	            coste[i] = PESO_DISTANCIA * dist[i]
-	                     + PESO_PELIGRO * peligro[i] * 2.0f
-	                     - apetito[i]
-	                     + callejon[i];
-	        }
-        	break;
-        case NORMAL:
-        	default: for (int i = 0; i < nNodos; i++) {
-	            coste[i] = PESO_DISTANCIA * dist[i]
-	                     + PESO_PELIGRO * peligro[i]
-	                     - apetito[i]
-	                     + callejon[i];
-	        }
-        	break;
+    private void combinarCoste() {
+
+        for (int i = 0; i < nNodos; i++) {
+            coste[i] = PESO_DISTANCIA * dist[i]
+                     + PESO_PELIGRO * peligro[i]
+                     - apetito[i]
+                     + callejon[i];
         }
     }
 
@@ -425,63 +417,11 @@ private double costeInterseccion(Game game, int interseccion) {
             }
         }
 
-        //En HUIDA, priorizar el corto plazo
-        double pesoLocal = 0.5f;
-        if (faseActual == Fase.HUIDA)
-        {
-        	pesoLocal = 0.7f;
-        }
-        
         return mejorFuturo == Double.POSITIVE_INFINITY
             ? 0.0
-            : mejorFuturo * pesoLocal;
+            : mejorFuturo;
     }
 
-    
-    private Fase detectarFase(Game game) {
-
-        int nodoPacman = game.getPacmanCurrentNodeIndex();
-
-        boolean hayComestible = false;
-        int     fantasmasCercaNoComestibles = 0;
-        int     comestiblesCerca = 0;
-
-        for (GHOST g : GHOST.values()) {
-            if (game.getGhostLairTime(g) > 0) continue;
-            int ng = game.getGhostCurrentNodeIndex(g);
-            if (ng == -1) continue;
-
-            int d = game.getShortestPathDistance(nodoPacman, ng);
-            boolean comestible = game.isGhostEdible(g);
-
-            if (comestible) {
-                hayComestible = true;
-                if (d >= 0 && d <= CERCA) comestiblesCerca++;
-            } else {
-                if (d >= 0 && d <= HOLGURA) fantasmasCercaNoComestibles++;
-            }
-        }
-
-        // 1) Si hay fantasmas no comestibles pegados -> HUIDA
-        if (fantasmasCercaNoComestibles > 0) return Fase.HUIDA;
-
-        // 2) Si hay fantasmas comestibles y están razonablemente cerca -> CAZA
-        if (hayComestible && comestiblesCerca > 0) return Fase.CAZA;
-
-
-        // 3) Si quedan power pills y hay varios fantasmas rondando -> POWER
-        int powerPillsRestantes = game.getActivePowerPillsIndices().length;
-        int c=0;
-        for (GHOST g : GHOST.values()) {
-            if (game.getGhostLairTime(g) > 0) c++;
-        }
-        
-        if (powerPillsRestantes > 0 && c >= GHOST.values().length)
-            return Fase.POWER;
-
-        return Fase.NORMAL;
-    }
-    
     @Override
-    public String getName() { return "MsPacMan"; }
+    public String getName() { return "MsPacManV5_GIRM_LC"; }
 }

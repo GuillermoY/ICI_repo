@@ -1,4 +1,4 @@
-package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+package es.ucm.fdi.ici.c2627.practica1.GIRM_LC;
 
 import java.util.EnumMap;
 
@@ -8,7 +8,7 @@ import pacman.game.Constants.MOVE;
 import pacman.game.Constants.DM;
 import pacman.game.Game;
 
-public class GhostsV0 extends GhostController {
+public class GhostsEntrega extends GhostController {
 	private EnumMap<GHOST, MOVE> moves = new EnumMap<GHOST, MOVE>(GHOST.class);
     public static final double DISTANCIA_MINIMA_FANTASMAS             = 5.0;
 
@@ -53,19 +53,8 @@ public class GhostsV0 extends GhostController {
                 return primerMovimientoDe(game,
                         game.getShortestPath(nodo, pacman, ultimo));
 
-            case PINKY: { // Rosa: intenta interceptar a Ms. Pac-Man
-                int cruce = proximoCruceDe(game);
-
-                if (cruce != -1) {
-                    return primerMovimientoDe(
-                            game,
-                            game.getShortestPath(nodo, cruce, ultimo));
-                }
-
-                // Si no encontramos ningún cruce, perseguimos a Pac-Man
-                return primerMovimientoDe(
-                        game,
-                        game.getShortestPath(nodo, pacman, ultimo));
+            case PINKY: { // ROSA; intercepta: va al próximo cruce de Ms. Pac-Man
+                return primerMovimientoDe(game, game.getShortestPath(nodo, pacman, ultimo));
             }
 
             case INKY: { // AZUL; cubre la píldora de poder activa más cercana a Ms. Pac-Man
@@ -91,109 +80,27 @@ public class GhostsV0 extends GhostController {
         if (camino == null || camino.length < 2) return MOVE.NEUTRAL;
         return game.getMoveToMakeToReachDirectNeighbour(camino[0], camino[1]);
     }
-    
-    private int proximoCruceDe(Game game) {
-        int pacman = game.getPacmanCurrentNodeIndex();
-        MOVE direccion = game.getPacmanLastMoveMade();
-
-        // Sin dirección conocida, no podemos calcular hacia dónde va
-        if (direccion == null || direccion == MOVE.NEUTRAL) {
-            return -1;
-        }
-
-        // Avanzamos primero en la dirección de Pac-Man
-        int actual = game.getNeighbour(pacman, direccion);
-
-        if (actual == -1) {
-            return -1;
-        }
-
-        MOVE movimientoAnterior = direccion;
-        int limite = 0;
-
-        // Buscamos la primera intersección que haya delante
-        while (actual == -1 && limite < 1000) {
-            MOVE[] opciones =
-                    game.getPossibleMoves(actual, movimientoAnterior);
-
-            if (opciones == null || opciones.length == 0) {
-                return -1;
-            }
-
-            // En un pasillo normalmente solo hay una opción
-            MOVE siguiente = opciones[0];
-            int vecino = game.getNeighbour(actual, siguiente);
-
-            if (vecino == -1) {
-                return -1;
-            }
-
-            actual = vecino;
-            movimientoAnterior = siguiente;
-            limite++;
-        }
-
-        if (limite >= 1000) {
-            return -1;
-        }
-
-        return actual;
-    }
 
     private MOVE huirConCriterio(Game game, int nodo, MOVE ultimo, int pacman, GHOST ghostType) {
-
-        GHOST mejorCompanero = null;
-        int menorDistancia = Integer.MAX_VALUE;
-
-        // Buscamos el compañero no comestible más cercano
-        // que se encuentre fuera de la guarida.
-        for (GHOST otro : GHOST.values()) {
-
-            if (otro == ghostType) {
-                continue;
-            }
-
-            if (game.getGhostLairTime(otro) > 0) {
-                continue;
-            }
-
-            if (game.isGhostEdible(otro)) {
-                continue;
-            }
-
-            int nodoOtro = game.getGhostCurrentNodeIndex(otro);
-
-            if (nodoOtro == -1) {
-                continue;
-            }
-
-            int distancia =
-                    game.getShortestPathDistance(nodo, nodoOtro);
-
-            if (distancia >= 0 && distancia < menorDistancia) {
-                menorDistancia = distancia;
-                mejorCompanero = otro;
-            }
+    	
+        for (GHOST f : GHOST.values()) {
+        	if (!game.isGhostEdible(f))
+        	{
+            	return game.getClosestNodeIndexFromNodeIndex( 
+                		game.getGhostCurrentNodeIndex(ghostType), 
+                		game.getGhostCurrentNodeIndex(f),
+                		game.getGhostLastMoveMade(ghostType),
+                		DM.PATH);
+        	}
         }
-
-        // Si existe un compañero adecuado, nos acercamos a él
-        if (mejorCompanero != null) {
-            int objetivo =
-                    game.getGhostCurrentNodeIndex(mejorCompanero);
-
-            int[] camino =
-                    game.getShortestPath(nodo, objetivo, ultimo);
-
-            return primerMovimientoDe(game, camino);
-        }
-
-        // Si no hay compañeros válidos, huimos de Pac-Man
-        return game.getApproximateNextMoveAwayFromTarget(
-                nodo,
-                pacman,
-                ultimo,
-                DM.PATH);
-    }
+    	
+    	return game.getApproximateNextMoveAwayFromTarget( 
+                		game.getGhostCurrentNodeIndex(ghostType), 
+                		game.getPacmanCurrentNodeIndex(),
+                		game.getGhostLastMoveMade(ghostType),
+                		DM.PATH);
+            }
+        
 
     private MOVE movimientoAleatorioLegal(Game game, int nodo, MOVE ultimo) {
         MOVE[] ops = game.getPossibleMoves(nodo, ultimo);
@@ -365,7 +272,7 @@ public class GhostsV0 extends GhostController {
 
 
     public String getName() {
-    	return "Ghosts";
+    	return "GhostsEntrega_GIRM_LC";
     }
 
 }

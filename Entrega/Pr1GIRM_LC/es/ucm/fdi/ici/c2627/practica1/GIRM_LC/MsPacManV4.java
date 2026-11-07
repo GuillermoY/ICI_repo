@@ -1,4 +1,4 @@
-package es.ucm.fdi.ici.c2627.practica1.grupoIndividual;
+package es.ucm.fdi.ici.c2627.practica1.GIRM_LC;
 
 import pacman.controllers.PacmanController;
 import pacman.game.Constants.MOVE;
@@ -12,17 +12,17 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.ArrayList;
+import java.text.*;
 
-public class MsPacMan extends PacmanController {
+public class MsPacManV4 extends PacmanController {
 
   
     //  PARÁMETROS
     public static final int CERCA                       = 30;
     public static final int HOLGURA                     = 6;
-    public static final int FANTASMAS_PARA_PILDORA      = 2;
-    public static final int PROFUNDIDAD_SEGURA          = 3;
+    public static final int PROFUNDIDAD_SEGURA          = 5;
 
-    public static final boolean DEBUG                   = true;
+    public static final boolean DEBUG                   = false;
 
     // Pesos base
     public static final double PELIGRO_BASE             = 500.0;
@@ -43,33 +43,81 @@ public class MsPacMan extends PacmanController {
     private double[] callejon;      // penalización por callejones sin salida
     private int[]    grado;         // grado de cada nodo (nº vecinos)
 
-
     @Override
     public MOVE getMove(Game game, long timeDue) {
 
-        int nodo  = game.getPacmanCurrentNodeIndex();
+        int nodo = game.getPacmanCurrentNodeIndex();
         MOVE last = game.getPacmanLastMoveMade();
         MOVE[] opciones = game.getPossibleMoves(nodo, last);
-        
-        if (opciones.length == 1) return opciones[0];
 
         asegurarBuffers(game);
 
-//        faseActual = detectarFase(game); //Detectar fase
-        
-        calcularDistanciasPildoras(game); //Distancias a píldoras
+        calcularDistanciasPildoras(game);
+        calcularPeligroYApetito(game);
+        calcularCallejones(game);
+        combinarCoste();
 
-        calcularPeligroYApetito(game); //Peligro y apetito de fantasmas
+        // Dibujar todos los nodos en cada turno.
+        if (DEBUG) {
+            dibujarCostes(game);
+        }
 
-        calcularCallejones(game); //Penalización por callejones
+        // Si solo hay un movimiento, continuar por él.
+        if (opciones.length == 1) {
+            return opciones[0];
+        }
 
-        combinarCoste(); //Coste combinado
+        return decidirConLookahead(game, nodo, last, opciones);
+    }
+ 
+    private void dibujarCostes(Game game) {
+    	double max = 0.0;
 
-        // 6) DEBUG SIEMPRE
-//        if (DEBUG)
-//            debugCostes(game);
+    	// Buscar el máximo coste alcanzable.
+    	for (int i = 0; i < nNodos; i++) {
+    	    double v = coste[i];
 
-        return decidirConLookahead(game, nodo, last, opciones); //Decisión
+    	    if (Double.isFinite(v)
+    	            && v < COSTE_INALCANZABLE) {
+    	        max = Math.max(max, Math.max(0.0, v));
+    	    }
+    	}
+
+    	// Evitar divisiones problemáticas.
+    	double escala = Math.log1p(max);
+
+    	for (int i = 0; i < nNodos; i++) {
+
+    	    double v = coste[i];
+
+    	    if (!Double.isFinite(v)
+    	            || v >= COSTE_INALCANZABLE) {
+    	        continue;
+    	    }
+
+    	    // Normalización logarítmica.
+    	    double t = escala > 0.0
+    	            ? Math.log1p(Math.max(0.0, v)) / escala
+    	            : 0.0;
+
+    	    t = Math.max(0.0, Math.min(1.0, t));
+
+    	    // Verde = coste bajo; rojo = coste alto.
+    	    Color color = new Color(
+    	            (int) (255 * t),
+    	            (int) (255 * (1.0 - t)),
+    	            0
+    	    );
+
+    	    GameView.addPoints(game, color, i);
+    	}
+
+    	// Dibujar Pac-Man en azul.
+    	GameView.addPoints(
+    	        game,
+    	        Color.BLUE,
+    	        game.getPacmanCurrentNodeIndex()
+    	);        
     }
 
 
@@ -87,7 +135,7 @@ public class MsPacMan extends PacmanController {
             precomputarGrado(game);
         }
     }
-
+    // Calcula cuántos vecinos tiene cada nodo para las direcciones para calcular las intersecciones
     private void precomputarGrado(Game game) {
         for (int i = 0; i < nNodos; i++) {
             int g = 0;
@@ -137,13 +185,13 @@ public class MsPacMan extends PacmanController {
     }
     
 private boolean esInterseccion(int nodo) {
-    return grado[nodo] >= 2;
+    return grado[nodo] >= 3;
 }
 
 private double costeInterseccion(Game game, int interseccion) {
 
     if (!esInterseccion(interseccion)) return 0.0;
-
+    
     int nodoPacman = game.getPacmanCurrentNodeIndex();
 
     double peligroInterseccion = 0.0;
@@ -202,10 +250,13 @@ private double costeInterseccion(Game game, int interseccion) {
 
                 if (comestible) {
                     double t = game.getGhostEdibleTime(g);
-                    double factorTiempo = Math.min(1.0, t / 40.0);
-                    // Atrae hacia el fantasma, especialmente en fase CAZA
-                    double peso = 2.0;
-                    apetito[nodo] += peso * APETITO_BASE * factorTiempo / (d + 1);
+                    if (d < t) // Solo si da tiempo a comer al fantasma
+                    {
+	                    double factorTiempo = Math.min(1.0, t / 40.0);
+	                    // Atrae hacia el fantasma, especialmente en fase CAZA
+	                    double peso = 2.0;
+	                    apetito[nodo] += peso * APETITO_BASE * factorTiempo / (d + 1);
+                    }
                 } else {
                     double multiplicador = 1.0;
                     MOVE dirG = game.getGhostLastMoveMade(g);
@@ -255,7 +306,6 @@ private double costeInterseccion(Game game, int interseccion) {
     private MOVE decidirConLookahead(Game game, int nodo, MOVE ultimo, MOVE[] opciones) {
         MOVE mejor = opciones[0];
         double mejorCoste = Double.MAX_VALUE;
-
         for (MOVE m : opciones) {
             int v = game.getNeighbour(nodo, m);
             if (v == -1) continue;
@@ -268,27 +318,80 @@ private double costeInterseccion(Game game, int interseccion) {
         return mejor;
     }
 
-    private double costeDe(Game game, int nodo, MOVE ultimo, int prof) { // Devulve el coste del nodo especificado
-        double local = coste[nodo];
-        if (prof <= 0) return local;
+    private double costeDe(Game game, int nodo, MOVE ultimo, int prof) {
+        if (prof <= 0) {
+            return 0.0;
+        }
 
         MOVE[] ops = game.getPossibleMoves(nodo, ultimo);
-        if (ops == null || ops.length == 0) return local;
 
-        double mejorFuturo = Double.MAX_VALUE;
+        if (ops == null || ops.length == 0) {
+            return 0.0;
+        }
+
+        double mejorFuturo = Double.POSITIVE_INFINITY;
+
         for (MOVE m : ops) {
             int v = game.getNeighbour(nodo, m);
-            if (v == -1) continue;
-            double c = costeDe(game, v, m, prof - 1);
-            if (c < mejorFuturo) mejorFuturo = c;
-        }
-        if (mejorFuturo == Double.MAX_VALUE) mejorFuturo = local;
+            if (v == -1) {
+                continue;
+            }
 
-        // En HUIDA, priorizar el corto plazo (huir ya)
-        double pesoLocal = 0.5;
-        return pesoLocal * local + (1.0 - pesoLocal) * mejorFuturo;
+            double costeTramo = 0.0;
+            int actual = v;
+            MOVE direccion = m;
+
+            // Evita bucles dentro de un mismo pasillo.
+            boolean[] visitados = new boolean[grado.length];
+
+            while (actual != -1 && !visitados[actual]) {
+                visitados[actual] = true;
+                costeTramo += coste[actual];
+
+                // El tramo termina al llegar a un cruce.
+                if (esInterseccion(actual)) {
+                    break;
+                }
+
+                MOVE[] siguientes = game.getPossibleMoves(actual, direccion);
+
+                if (siguientes == null || siguientes.length == 0) {
+                    // Final del pasillo o callejón.
+                    break;
+                }
+
+                int siguiente = game.getNeighbour(actual, siguientes[0]);
+
+                if (siguiente == -1 || visitados[siguiente]) {
+                    break;
+                }
+
+                direccion = siguientes[0];
+                actual = siguiente;
+            }
+
+            double futuro = 0.0;
+
+            if (actual != -1
+                    && esInterseccion(actual)
+                    && prof > 1) {
+                futuro = costeDe(
+                    game, actual, direccion, prof - 1
+                );
+            }
+
+            double total = costeTramo + futuro;
+
+            if (total < mejorFuturo) {
+                mejorFuturo = total;
+            }
+        }
+
+        return mejorFuturo == Double.POSITIVE_INFINITY
+            ? 0.0
+            : mejorFuturo;
     }
 
     @Override
-    public String getName() { return "MsPacMan"; }
+    public String getName() { return "MsPacManV4_GIRM_LC"; }
 }
