@@ -1,0 +1,40 @@
+Rivales de la Práctica 1  ·  Ingeniería de Comportamientos Inteligentes
+
+Tres rivales para que probéis vuestra Ms. Pac-Man y vuestros fantasmas contra
+algo más que GhostsRandom. Cada jar trae una pareja, en el paquete
+es.ucm.fdi.ici.rivales:
+
+  rival-basico.jar       MsPacManBasico      GhostsBasico
+  rival-intermedio.jar   MsPacManIntermedio  GhostsIntermedio
+  rival-avanzado.jar     MsPacManAvanzado    GhostsAvanzado
+
+Cómo añadirlos en Eclipse:
+  1. Copiad los tres jar a una carpeta lib/ dentro de vuestro proyecto.
+  2. Botón derecho sobre cada jar > Build Path > Add to Build Path.
+     (O Project > Properties > Java Build Path > Libraries > Classpath >
+     Add JARs...)
+
+Cómo usarlos en ExecutorTest:
+
+  import es.ucm.fdi.ici.rivales.*;
+
+  PacmanController pacMan = new MsPacMan();          // la vuestra
+  GhostController  ghosts = new GhostsIntermedio();  // el rival
+
+  // o al revés
+  PacmanController pacMan = new MsPacManAvanzado();
+  GhostController  ghosts = new Ghosts();            // los vuestros
+
+Para verlo jugar, executor.runGame(pacMan, ghosts, 30). Para medir, mejor
+runExperiment con unas cuantas partidas, porque una suelta no dice nada:
+
+  Stats[] r = executor.runExperiment(pacMan, ghosts, 100, "prueba");
+  System.out.println(r[0].getAverage());
+
+Como referencia, la media de cada rival contra los 17 grupos del concurso de
+la Práctica 1 (con Ms. Pac-Man, más es mejor; con fantasmas, menos):
+
+                 Ms. Pac-Man   Fantasmas (puntos encajados)
+  Básico             2300          6200
+  Intermedio         4900          5100
+  Avanzado           8200          3000

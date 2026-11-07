@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica0.grupoIndividual.GhostsAggressive"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica0.grupoIndividual.MsPacManRunAway_EJ1"/>
+    <fullyQualifiedTypeName name="pacman.game.Constants.DM"/>
+    <fullyQualifiedTypeName name="pacman.controllers.HumanController"/>
+    <fullyQualifiedTypeName name="pacman.controllers.KeyBoardInput"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica0.grupoIndividual.MsPacMan"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica0.grupoIndividual.Ghosts"/>
+    <fullyQualifiedTypeName name="pacman.game.GameView"/>
+    <fullyQualifiedTypeName name="java.awt.Color"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica0.grupoIndividual.GhostsEntrega"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.Input"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.fsm.FSM"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState.Fase"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManV0Me"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManV2Me"/>
+</qualifiedTypeNameHistroy>

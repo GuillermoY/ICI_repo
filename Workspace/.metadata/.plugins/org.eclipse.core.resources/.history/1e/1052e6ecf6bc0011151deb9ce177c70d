@@ -1,0 +1,91 @@
+import es.ucm.fdi.ici.c2627.practica0.grupoIndividual.Ghosts;
+import es.ucm.fdi.ici.c2627.practica0.grupoIndividual.GhostsAggressive;
+import es.ucm.fdi.ici.c2627.practica0.grupoIndividual.MsPacMan;
+import es.ucm.fdi.ici.c2627.practica0.grupoIndividual.MsPacManViejo;
+
+import pacman.Executor;
+import pacman.controllers.GhostController;
+import pacman.controllers.PacmanController;
+import pacman.game.util.Stats;
+
+
+public class ExecutorTest {
+
+    public static void main(String[] args) {
+
+        int partidas = 100;
+
+        Executor executor = new Executor.Builder()
+                .setTickLimit(4000)
+                .setVisual(false)
+                .build();
+
+
+        // =====================================================
+        // MS PACMAN NUEVO
+        // =====================================================
+
+        PacmanController pacMan1 = new MsPacManViejo();
+        GhostController ghosts1 = new GhostsAggressive();
+
+        Stats[] resultados1 = executor.runExperiment(
+                pacMan1,
+                ghosts1,
+                partidas,
+                "MsPacMan NUEVO vs Ghosts"
+        );
+
+        imprimirResultados(
+                "MsPacMan NUEVO vs Ghosts",
+                resultados1
+        );
+    }
+
+
+    private static void imprimirResultados(
+            String nombre,
+            Stats[] resultados) {
+
+        System.out.println();
+        System.out.println("==============================================");
+        System.out.println("       " + nombre);
+        System.out.println("==============================================");
+
+        for (Stats stats : resultados) {
+
+            System.out.println("----------------------------------------------");
+
+            System.out.println(
+                    "Métrica: " +
+                    stats.getDescription()
+            );
+
+            System.out.println(
+                    "Media:   " +
+                    stats.getAverage()
+            );
+
+            System.out.println(
+                    "Mínimo:  " +
+                    stats.getMin()
+            );
+
+            System.out.println(
+                    "Máximo:  " +
+                    stats.getMax()
+            );
+
+            System.out.println(
+                    "Desv.:   " +
+                    stats.getStandardDeviation()
+            );
+
+            System.out.println(
+                    "N:       " +
+                    stats.getN()
+            );
+        }
+
+        System.out.println("==============================================");
+    }
+}

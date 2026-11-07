@@ -1,0 +1,120 @@
+
+import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.GhostsV0Me;
+import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.GhostsV1Me;
+import es.ucm.fdi.ici.c2627.practica0.grupoIndividual.MsPacManV4;
+
+import pacman.Executor;
+import pacman.controllers.GhostController;
+import pacman.controllers.PacmanController;
+import pacman.game.util.Stats;
+
+import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.*;
+import es.ucm.fdi.ici.rivales.*;
+public class ExecutorTest {
+
+    public static void main(String[] args) {
+
+        int partidas = 50;
+
+        Executor executor = new Executor.Builder()
+                .setTickLimit(4000)
+                .setVisual(false)
+                .build();
+
+        // Mismo Pac-Man para comparar las dos versiones
+        PacmanController pacman = new MsPacManV2Me();
+        PacmanController pacman1 = new MsPacManV3Me();
+
+        GhostController ghosts0 = new GhostsIntermedio();
+
+        // Ejecutar ambos experimentos
+        Stats[] resultadosV0 = executor.runExperiment(
+                pacman, ghosts0, partidas, "GHOST V3");
+
+        Stats[] resultadosV1 = executor.runExperiment(
+                pacman1, ghosts0, partidas, "GHOST V2");
+
+        // Mostrar estadísticas
+        imprimirResultados("PACMAN V0", resultadosV0);
+        imprimirResultados("PACMAN V2", resultadosV1);
+
+        // Comparar automáticamente las estadísticas
+        compararResultados(resultadosV0, resultadosV1);
+    }
+
+    private static void imprimirResultados(
+            String nombre, Stats[] resultados) {
+
+        System.out.println("\n===== " + nombre + " =====");
+
+        for (Stats stats : resultados) {
+            System.out.println(
+                    stats.getDescription()
+                    + " | Media: " + stats.getAverage()
+                    + " | Min: " + stats.getMin()
+                    + " | Max: " + stats.getMax()
+                    + " | Desv.: " + stats.getStandardDeviation()
+                    + " | N: " + stats.getN()
+            );
+        }
+    }
+
+    private static void compararResultados(
+            Stats[] v0, Stats[] v1) {
+
+        System.out.println("\n===== COMPARACIÓN V0 vs V1 =====");
+
+        if (v0.length != v1.length) {
+            System.out.println(
+                    "No se pueden comparar: distinto número de estadísticas.");
+            return;
+        }
+
+        for (int i = 0; i < v0.length; i++) {
+
+            Stats a = v0[i];
+            Stats b = v1[i];
+
+            double diferencia =
+                    b.getAverage() - a.getAverage();
+
+            double errorTipico = Math.sqrt(
+                    Math.pow(a.getStandardDeviation(), 2) / a.getN()
+                    + Math.pow(b.getStandardDeviation(), 2) / b.getN()
+            );
+
+            System.out.println("\nMétrica: " + a.getDescription());
+            System.out.println("Media V0: " + a.getAverage());
+            System.out.println("Media V1: " + b.getAverage());
+            System.out.println("Diferencia V1 - V0: " + diferencia);
+            System.out.println("Error típico de la diferencia: "
+                    + errorTipico);
+
+            if (errorTipico > 0) {
+                System.out.println("Diferencia / error típico: "
+                        + Math.abs(diferencia) / errorTipico);
+            }
+        }
+    }
+}
+
+
+//
+///** Una partida en pantalla, con la traza de las reglas de Ms. Pac-Man en la consola. */
+//public class ExecutorTest {
+//
+//    public static void main(String[] args) {
+//        Executor executor = new Executor.Builder()
+//                .setTickLimit(4000)
+//                .setVisual(true)
+//                .setScaleFactor(3.0)
+//                .build();
+//
+//        MsPacManV0Me pacman = new MsPacManV0Me();
+//        Ghosts ghosts = new Ghosts();
+//        TrazaReglas traza = new TrazaReglas("MSPACMAN", pacman.getMotor(), true);   // true: sólo los cambios
+//
+//        executor.runGame(pacman, ghosts, 40);   // 40 ms por turno: más, para verlo despacio
+//        traza.resumen();
+//    }
+//}

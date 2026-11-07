@@ -1,0 +1,104 @@
+package es.ucm.fdi.ici.c2627.practica0.grupoIndividual;
+
+import java.awt.Color;
+import java.util.Random;
+
+import pacman.controllers.PacmanController;
+import pacman.game.Constants.DM;
+import pacman.game.Constants.GHOST;
+import pacman.game.Constants.MOVE;
+import pacman.game.Game;
+import pacman.game.GameView;
+
+public class MsPacMan extends PacmanController{
+	
+    private Random rnd = new Random();
+    private MOVE[] allMoves = MOVE.values();
+
+    @Override
+    public MOVE getMove(Game game, long timeDue) {
+    	int[] activePowerPills = game.getActivePowerPillsIndices();
+    	int pacMan = game.getPacmanCurrentNodeIndex();
+        for (int i = 0; i < activePowerPills.length; i++)
+        {
+            GameView.addLines(game, Color.CYAN,
+                    game.getPacmanCurrentNodeIndex(), activePowerPills[i]);
+        GameView.addPoints(game, Color.BLUE,
+        		game.getShortestPath(pacMan, activePowerPills[i]));
+    }        
+        
+        
+    	int limit = 20;
+    	MOVE lastMove = game.getPacmanLastMoveMade();
+    	
+    	GHOST chasingGhost = getNearestChasingGhost(game, limit);
+        if (chasingGhost != null)
+        {
+            
+            return game.getApproximateNextMoveAwayFromTarget(
+            		pacMan,
+            		game.getGhostCurrentNodeIndex(chasingGhost),
+            		lastMove,
+            		DM.PATH);	
+        }
+    	GHOST edibleGhost = getNearestEdibleGhost(game, limit);
+        if (edibleGhost != null)
+        {
+            return game.getApproximateNextMoveTowardsTarget(
+            		pacMan,
+            		game.getGhostCurrentNodeIndex(edibleGhost),
+            		lastMove,
+            		DM.PATH);
+        }
+        else
+        {
+        	return game.getNextMoveTowardsTarget(
+        			pacMan,
+        			game.getClosestNodeIndexFromNodeIndex(pacMan, game.getActivePillsIndices(), DM.PATH),
+        			lastMove,
+        			DM.PATH);	        	
+        }
+        
+    }
+    
+    private GHOST getNearestEdibleGhost(Game game, int limit)
+    {
+    	GHOST closestEdibleGhost = null;
+        for (GHOST ghostType : GHOST.values()) {
+        	if (game.isGhostEdible(ghostType) &&
+        			game.getDistance(game.getPacmanCurrentNodeIndex(), game.getGhostCurrentNodeIndex(ghostType), DM.PATH) <= limit)
+        	{
+        		if (closestEdibleGhost == null || 
+        				game.getDistance(game.getPacmanCurrentNodeIndex(), game.getGhostCurrentNodeIndex(ghostType), DM.PATH) <
+        				game.getDistance(game.getPacmanCurrentNodeIndex(), game.getGhostCurrentNodeIndex(closestEdibleGhost), DM.PATH))
+        		{
+        			closestEdibleGhost = ghostType;
+        		}
+        	}
+    	}
+        return closestEdibleGhost;        
+    }
+    
+    private GHOST getNearestChasingGhost(Game game, int limit)
+    {
+    	GHOST closestChasingGhost = null;
+        for (GHOST ghostType : GHOST.values()) {
+        	if (!game.isGhostEdible(ghostType) &&
+        			game.getDistance(game.getPacmanCurrentNodeIndex(), game.getGhostCurrentNodeIndex(ghostType), DM.PATH) <= limit)
+        	{
+	    		if (closestChasingGhost == null || 
+	    				game.getDistance(game.getPacmanCurrentNodeIndex(), game.getGhostCurrentNodeIndex(ghostType), DM.PATH) <
+	    				game.getDistance(game.getPacmanCurrentNodeIndex(), game.getGhostCurrentNodeIndex(closestChasingGhost), DM.PATH))
+	    		{
+	    			closestChasingGhost = ghostType;
+	    		}
+        	}
+    	}
+        return closestChasingGhost;        
+    }
+    
+    public String getName() {
+    	return "MsPacMan";
+    }
+    
+}

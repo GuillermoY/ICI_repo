@@ -1,0 +1,33 @@
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import es.ucm.fdi.ici.fsm.State;
+import pacman.game.Constants.MOVE;
+import pacman.game.Game;
+
+public class MsPacManState implements State {
+
+    private final Fase fase;
+    private final MsPacManV3Me controller; // <-- Ahora apunta a V3
+
+    public MsPacManState(Fase fase, MsPacManV3Me controller) {
+        this.fase = fase;
+        this.controller = controller;
+    }
+
+    public Fase getFase() { return fase; }
+
+    public boolean esHuida() { return this.fase == Fase.HUIDA; } // <-- NUEVO
+
+    @Override
+    public MOVE execute(Input in) {
+        Game game = ((MsPacManInput) in).getGame();
+        return controller.decidir(game, fase);
+    }
+
+    @Override
+    public void stop() { }
+
+    @Override
+    public String toString() { return fase.name(); }
+}

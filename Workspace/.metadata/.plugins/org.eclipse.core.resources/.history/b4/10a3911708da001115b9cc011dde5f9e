@@ -1,0 +1,50 @@
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+
+public class MsPacManInput extends Input {
+
+    public static final int CERCA   = 30;
+    public static final int HOLGURA = 6;
+
+    private boolean hayComestibleCerca;
+    private boolean hayFantasmaNoComestiblePegado;
+    private boolean hayPowerPillYFantasmas;
+
+    public MsPacManInput(Game game) { super(game); }
+
+    @Override
+    public void parseInput() {
+        int nodoPacman = game.getPacmanCurrentNodeIndex();
+        boolean comestibleCerca = false;
+        boolean noComestiblePegado = false;
+
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) continue;
+            int ng = game.getGhostCurrentNodeIndex(g);
+            if (ng == -1) continue;
+            int d = game.getShortestPathDistance(nodoPacman, ng);
+            if (game.isGhostEdible(g)) {
+                if (d >= 0 && d <= CERCA) comestibleCerca = true;
+            } else {
+                if (d >= 0 && d <= HOLGURA) noComestiblePegado = true;
+            }
+        }
+        this.hayComestibleCerca = comestibleCerca;
+        this.hayFantasmaNoComestiblePegado = noComestiblePegado;
+
+        int enLair = 0;
+        for (GHOST g : GHOST.values())
+            if (game.getGhostLairTime(g) > 0) enLair++;
+
+        this.hayPowerPillYFantasmas =
+                game.getActivePowerPillsIndices().length > 0
+                && enLair >= GHOST.values().length;
+    }
+
+    public boolean hayComestibleCerca()            { return hayComestibleCerca; }
+    public boolean hayFantasmaNoComestiblePegado() { return hayFantasmaNoComestiblePegado; }
+    public boolean hayPowerPillYFantasmas()        { return hayPowerPillYFantasmas; }
+}

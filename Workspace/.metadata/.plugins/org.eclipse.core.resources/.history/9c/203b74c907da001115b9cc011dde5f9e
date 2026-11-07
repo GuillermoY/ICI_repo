@@ -1,0 +1,860 @@
+Guiller_Ram
+iamgil_r
+Compartiendo su pantalla
+enum
+HannaXD54 — 14/10/2026 16:07
+aaa
+okok
+Guiller_Ram — 14/10/2026 16:10
+También puso el profe unos pacmans en un correo para testear nuestros fantasmas, pero eso ya mañana cuando hagamos la práctica 2
+Guiller_Ram — 14/10/2026 16:54
+Para hacer esto me imagino que tengo que modificar el diario también 😮‍💨
+
+HannaXD54 — 14/10/2026 16:55
+todos los cambios pal diario ;:,
+Guiller_Ram — 14/10/2026 16:56
+Bueno como lo he tocado yo lo meteré al diario. Pero tengo que decir que he usado IA? es que no me da la cabeza para estar con java ahora mismo
+HannaXD54 — 14/10/2026 17:17
+si no fue mucha ia pues no pero si es un tochaco de codigo si
+Guiller_Ram — 14/10/2026 19:23
+Oye liling con qué fantasmas hiciste las pruebas del pacman? para que la media no quede tan diferente
+Ah nada ya lo vi
+Esta al principio
+HannaXD54 — 14/10/2026 21:53
+ye XD
+HannaXD54 — 17/10/2026 11:13
+ok ya estoy
+Guiller_Ram
+ ha iniciado una llamada que ha durado 3 horas. — 17/10/2026 11:13
+Guiller_Ram — 17/10/2026 11:30
+
+HannaXD54 — 17/10/2026 13:05
+
+Guiller_Ram — 17/10/2026 13:16
+===== MsPacMan V0 =====
+MsPacMan V0 | Media: 2797.8 | Min: 1100.0 | Max: 6430.0 | Desv.: 1055.9632221486752 | N: 50
+MsPacMan V0 Ticks | Media: 1300.0 | Min: 175.0 | Max: 4001.0 | Desv.: 744.452243503331 | N: 50
+
+===== MsPacMan V1 =====
+MsPacMan V1 | Media: 3150.4 | Min: 1190.0 | Max: 7230.0 | Desv.: 1390.6846940868181 | N: 50
+MsPacMan V1 Ticks | Media: 1306.38 | Min: 189.0 | Max: 2315.0 | Desv.: 504.3864282270009 | N: 50
+HannaXD54 — 17/10/2026 13:22
+D      = 3150,4 − 2797,8 = +352,6
+
+ET_D   = √(196,67² + 149,33²) ≈ 246,9
+
+2·ET_D = 493,9
+
+|D| = 352,6 < 493,9 → no se distingue de ruido
+Guiller_Ram — 18/10/2026 17:21
+Al final terminaste los fantasmas o los terminamos ahora?
+HannaXD54 — 18/10/2026 19:55
+los terminamos ahora
+Tienes una llamada perdida de 
+HannaXD54
+ que ha durado unos segundos. — 18/10/2026 19:55
+Guiller_Ram
+ ha iniciado una llamada que ha durado 2 horas. — 18/10/2026 19:55
+Guiller_Ram — 21/10/2026 20:00
+noooooo
+
+https://discord.gg/cJS8ZRdMe
+Dtst
+Delete this server tmrw
+5 en línea
+8 miembros
+Est. ene 2026
+
+Ir al servidor
+Guiller_Ram — 02/11/2026 10:35
+Ya ha corregido la práctica 1 y 2...
+Vamos a tener que hacer otra corrección para la 2
+HannaXD54 — 02/11/2026 16:36
+oh no
+Guiller_Ram — 04/11/2026 14:16
+Cuando te parece ponerte con la reentrega?
+HannaXD54 — 04/11/2026 16:17
+el viernes?
+Guiller_Ram — 04/11/2026 16:17
+okk
+Guiller_Ram
+ ha iniciado una llamada que ha durado unos segundos. — 17:08
+Tienes una llamada perdida de 
+HannaXD54
+ que ha durado unos segundos. — 17:08
+Guiller_Ram
+ ha iniciado una llamada. — 17:09
+Guiller_Ram — 17:10
+Tipo de archivo adjunto: acrobat
+Retroalimentacion-P2-GIRM_LC.pdf
+872.08 KB
+HannaXD54 — 17:33
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import pacman.controllers.PacmanController;
+import pacman.game.Constants.MOVE;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+import pacman.game.GameView;
+import java.awt.Color;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+import java.text.*;
+
+// IMPORTS DE LA LIBRERÍA FSM (ajusta según tu paquete real)
+import fsm.FSM;
+import fsm.State;
+import fsm.Transition;
+
+public class MsPacManV1Me extends PacmanController {
+
+    // ================= PARÁMETROS (igual que antes) =================
+    public static final int CERCA               = 30;
+    public static final int HOLGURA             = 6;
+    public static final int PROFUNDIDAD_SEGURA  = 5;
+    public static final boolean DEBUG           = false;
+
+    public static final double PELIGRO_BASE       = 500.0;
+    public static final double APETITO_BASE       = 100.0;
+    public static final double COSTE_INALCANZABLE = 100_000.0;
+    public static final double PESO_DISTANCIA     = 1.0;
+    public static final double PESO_PELIGRO       = 1.0;
+    public static final double PESO_CALLEJON      = 80.0;
+    public static final double PESO_POWER_PILL    = 1.5;
+
+    // ================= ESTADO DE LA FSM =================
+    public enum Fase { CAZA, POWER, HUIDA, NORMAL }
+
+    private FSM<Fase> fsm;          // La máquina de estados
+    private Fase faseActual;        // Para consultar desde las acciones
+
+    // ================= BUFFERS (igual que antes) =================
+    private int      nNodos;
+    private double[] dist, peligro, apetito, coste, callejon;
+    private int[]    grado;
+
+    public MsPacManV1Me() {
+        construirFSM();
+    }
+
+    // =========================================================
+    //  CONSTRUCCIÓN DE LA MÁQUINA DE ESTADOS
+    // =========================================================
+    private void construirFSM() {
+        fsm = new FSM<>("MsPacManFSM", Fase.NORMAL);
+
+        // --- Definir los 4 estados con su acción asociada ---
+        fsm.addState(Fase.NORMAL, this::accionNormal);
+        fsm.addState(Fase.CAZA,   this::accionCaza);
+        fsm.addState(Fase.POWER,  this::accionPower);
+        fsm.addState(Fase.HUIDA,  this::accionHuida);
+
+        // --- Definir las transiciones ---
+        // NORMAL -> CAZA / POWER / HUIDA
+        fsm.addTransition(Fase.NORMAL, Fase.CAZA,  game -> hayComestibleCerca(game));
+        fsm.addTransition(Fase.NORMAL, Fase.POWER, game -> hayPowerPillYFantasmas(game));
+        fsm.addTransition(Fase.NORMAL, Fase.HUIDA, game -> hayFantasmaNoComestiblePegado(game));
+
+        // CAZA -> NORMAL / HUIDA
+        fsm.addTransition(Fase.CAZA, Fase.NORMAL, game -> !hayComestibleCerca(game));
+        fsm.addTransition(Fase.CAZA, Fase.HUIDA,  game -> hayFantasmaNoComestiblePegado(game));
+
+        // POWER -> NORMAL / CAZA
+        fsm.addTransition(Fase.POWER, Fase.CAZA,   game -> hayComestibleCerca(game));
+        fsm.addTransition(Fase.POWER, Fase.NORMAL, game -> !hayPowerPillYFantasmas(game));
+
+        // HUIDA -> NORMAL / CAZA
+        fsm.addTransition(Fase.HUIDA, Fase.CAZA,   game -> hayComestibleCerca(game));
+        fsm.addTransition(Fase.HUIDA, Fase.NORMAL, game -> !hayFantasmaNoComestiblePegado(game));
+    }
+
+    // =========================================================
+    //  PRE-COMPUTE (reset de la FSM al inicio)
+    // =========================================================
+    @Override
+    public void preCompute(String opponent) {
+        fsm.reset(Fase.NORMAL);
+        faseActual = Fase.NORMAL;
+    }
+
+    // =========================================================
+    //  BUCLE PRINCIPAL
+    // =========================================================
+    @Override
+    public MOVE getMove(Game game, long timeDue) {
+        asegurarBuffers(game);
+
+        // 1) Actualizar la FSM (evalúa transiciones y cambia de estado si toca)
+        faseActual = fsm.update(game);
+
+        // 2) Calcular los mapas de coste (igual que antes)
+... (82 líneas restantes)
+
+message.txt
+8 KB
+HannaXD54 — 17:43
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import pacman.controllers.PacmanController;
+import pacman.game.Constants.MOVE;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+import pacman.game.GameView;
+import java.awt.Color;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+
+// IMPORTS DE LA LIBRERÍA FSM (ajusta el paquete si es distinto)
+import fsm.FSM;
+
+public class MsPacManV1Me extends PacmanController {
+
+    // =========================================================
+    //  PARÁMETROS (idénticos a V0Me)
+    // =========================================================
+    public static final int CERCA               = 30;
+    public static final int HOLGURA             = 6;
+    public static final int PROFUNDIDAD_SEGURA  = 5;
+
+    public static final boolean DEBUG           = false;
+
+    public static final double PELIGRO_BASE       = 500.0;
+    public static final double APETITO_BASE       = 100.0;
+    public static final double COSTE_INALCANZABLE = 100_000.0;
+    public static final double PESO_DISTANCIA     = 1.0;
+    public static final double PESO_PELIGRO       = 1.0;
+    public static final double PESO_CALLEJON      = 80.0;
+    public static final double PESO_POWER_PILL    = 1.5;
+
+    // =========================================================
+    //  ESTADOS DE LA FSM
+    // =========================================================
+    public enum Fase {
+        CAZA,       // hay fantasmas comestibles -> perseguirlos
+        POWER,      // power pill disponible y fantasmas no comestibles cerca -> ir a por ella
+        HUIDA,      // fantasmas no comestibles muy cerca -> sobrevivir
+        NORMAL      // comer píldoras normales
+    }
+
+    // =========================================================
+    //  ESTADO
+    // =========================================================
+    private int      nNodos;
+    private double[] dist;
+    private double[] peligro;
+    private double[] apetito;
+    private double[] coste;
+    private double[] callejon;
+    private int[]    grado;
+
+    private FSM<Fase> fsm;
+    private Fase faseActual = Fase.NORMAL;
+
+    // =========================================================
+    //  CONSTRUCTOR: construye la FSM
+    // =========================================================
+    public MsPacManV1Me() {
+        construirFSM();
+    }
+
+    private void construirFSM() {
+        fsm = new FSM<>("MsPacManFSM", Fase.NORMAL);
+
+        // --- Estados con su acción asociada ---
+        fsm.addState(Fase.NORMAL, this::accionNormal);
+        fsm.addState(Fase.CAZA,   this::accionCaza);
+        fsm.addState(Fase.POWER,  this::accionPower);
+        fsm.addState(Fase.HUIDA,  this::accionHuida);
+
+        // --- Transiciones (equivalen a los if de detectarFase) ---
+        // Desde NORMAL
+        fsm.addTransition(Fase.NORMAL, Fase.CAZA,  this::hayComestibleCerca);
+        fsm.addTransition(Fase.NORMAL, Fase.HUIDA, this::hayFantasmaNoComestiblePegado);
+        fsm.addTransition(Fase.NORMAL, Fase.POWER, this::hayPowerPillYFantasmas);
+
+        // Desde CAZA
+        fsm.addTransition(Fase.CAZA, Fase.HUIDA,  this::hayFantasmaNoComestiblePegado);
+        fsm.addTransition(Fase.CAZA, Fase.NORMAL, game -> !hayComestibleCerca(game));
+
+        // Desde POWER
+        fsm.addTransition(Fase.POWER, Fase.CAZA,   this::hayComestibleCerca);
+        fsm.addTransition(Fase.POWER, Fase.NORMAL, game -> !hayPowerPillYFantasmas(game));
+
+        // Desde HUIDA
+        fsm.addTransition(Fase.HUIDA, Fase.CAZA,   this::hayComestibleCerca);
+        fsm.addTransition(Fase.HUIDA, Fase.NORMAL, game -> !hayFantasmaNoComestiblePegado(game));
+    }
+
+    // =========================================================
+    //  PRE-COMPUTE: reset de la FSM
+    // =========================================================
+    @Override
+    public void preCompute(String opponent) {
+        fsm.reset(Fase.NORMAL);
+        faseActual = Fase.NORMAL;
+... (370 líneas restantes)
+
+message.txt
+18 KB
+Guiller_Ram — 17:45
+package es.ucm.fdi.ici.fsm;
+
+import es.ucm.fdi.ici.Input;
+
+/
+Represents a transition in the FSM.
+To change to a target state, the evaluate() method must return true;
+@author Juan Ant. Recio García - Universidad Complutense de Madrid*/
+public interface Transition {
+
+    /
+Returns if the transition is applicable according to the input.
+*/
+public boolean evaluate(Input in);
+
+}
+HannaXD54 — 17:47
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+
+public class MsPacManInput implements Input {
+
+    public static final int CERCA   = 30;
+    public static final int HOLGURA = 6;
+
+    private final Game game;
+
+    public MsPacManInput(Game game) {
+        this.game = game;
+    }
+
+    public Game getGame() { return game; }
+
+    public boolean hayComestibleCerca() {
+        int nodoPacman = game.getPacmanCurrentNodeIndex();
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) continue;
+            int ng = game.getGhostCurrentNodeIndex(g);
+            if (ng == -1) continue;
+            if (!game.isGhostEdible(g)) continue;
+            int d = game.getShortestPathDistance(nodoPacman, ng);
+            if (d >= 0 && d <= CERCA) return true;
+        }
+        return false;
+    }
+
+    public boolean hayFantasmaNoComestiblePegado() {
+        int nodoPacman = game.getPacmanCurrentNodeIndex();
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) continue;
+            int ng = game.getGhostCurrentNodeIndex(g);
+            if (ng == -1) continue;
+            if (game.isGhostEdible(g)) continue;
+            int d = game.getShortestPathDistance(nodoPacman, ng);
+            if (d >= 0 && d <= HOLGURA) return true;
+        }
+        return false;
+    }
+
+    public boolean hayPowerPillYFantasmas() {
+        if (game.getActivePowerPillsIndices().length == 0) return false;
+        int enLair = 0;
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) enLair++;
+        }
+        return enLair >= GHOST.values().length;
+    }
+}
+Imagen
+HannaXD54 — 17:56
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+
+public class MsPacManInput extends Input {
+
+    public static final int CERCA   = 30;
+    public static final int HOLGURA = 6;
+
+    // --- Variables extraídas en parseInput() ---
+    private boolean hayComestibleCerca;
+    private boolean hayFantasmaNoComestiblePegado;
+    private boolean hayPowerPillYFantasmas;
+
+    public MsPacManInput(Game game) {
+        super(game); // el constructor de Input llama a parseInput()
+    }
+
+    @Override
+    public void parseInput() {
+        int nodoPacman = game.getPacmanCurrentNodeIndex();
+
+        boolean comestibleCerca = false;
+        boolean noComestiblePegado = false;
+
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) continue;
+            int ng = game.getGhostCurrentNodeIndex(g);
+            if (ng == -1) continue;
+
+            int d = game.getShortestPathDistance(nodoPacman, ng);
+
+            if (game.isGhostEdible(g)) {
+                if (d >= 0 && d <= CERCA) comestibleCerca = true;
+            } else {
+                if (d >= 0 && d <= HOLGURA) noComestiblePegado = true;
+            }
+        }
+
+        this.hayComestibleCerca = comestibleCerca;
+        this.hayFantasmaNoComestiblePegado = noComestiblePegado;
+
+        int enLair = 0;
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) enLair++;
+        }
+        this.hayPowerPillYFantasmas =
+                game.getActivePowerPillsIndices().length > 0
+                && enLair >= GHOST.values().length;
+    }
+
+    // --- Getters que usarán las transiciones ---
+    public boolean hayComestibleCerca()               { return hayComestibleCerca; }
+    public boolean hayFantasmaNoComestiblePegado()    { return hayFantasmaNoComestiblePegado; }
+    public boolean hayPowerPillYFantasmas()           { return hayPowerPillYFantasmas; }
+}
+Guiller_Ram — 17:59
+The type FSM is not generic; it cannot be parameterized with arguments <MsPacManV2Me.Fase>
+HannaXD54 — 18:02
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import es.ucm.fdi.ici.fsm.State;
+import pacman.game.Constants.MOVE;
+import pacman.game.Game;
+
+public class MsPacManState implements State {
+
+    public enum Fase { NORMAL, CAZA, POWER, HUIDA }
+
+    private final Fase fase;
+    private final MsPacManV2 controller;
+
+    public MsPacManState(Fase fase, MsPacManV2 controller) {
+        this.fase = fase;
+        this.controller = controller;
+    }
+
+    public Fase getFase() { return fase; }
+
+    @Override
+    public MOVE execute(Input in) {
+        Game game = ((MsPacManInput) in).getGame();
+        return controller.decidir(game, fase);
+    }
+
+    @Override
+    public void stop() {
+        // Nada que hacer: no guardamos estado entre turnos.
+    }
+
+    @Override
+    public String toString() { return fase.name(); }
+}
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import pacman.controllers.PacmanController;
+import pacman.game.Constants.MOVE;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+
+message.txt
+14 KB
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+
+public class MsPacManInput extends Input {
+
+    public static final int CERCA   = 30;
+    public static final int HOLGURA = 6;
+
+    private boolean hayComestibleCerca;
+    private boolean hayFantasmaNoComestiblePegado;
+    private boolean hayPowerPillYFantasmas;
+
+    public MsPacManInput(Game game) { super(game); }
+
+    @Override
+    public void parseInput() {
+        int nodoPacman = game.getPacmanCurrentNodeIndex();
+        boolean comestibleCerca = false;
+        boolean noComestiblePegado = false;
+
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) continue;
+            int ng = game.getGhostCurrentNodeIndex(g);
+            if (ng == -1) continue;
+            int d = game.getShortestPathDistance(nodoPacman, ng);
+            if (game.isGhostEdible(g)) {
+                if (d >= 0 && d <= CERCA) comestibleCerca = true;
+            } else {
+                if (d >= 0 && d <= HOLGURA) noComestiblePegado = true;
+            }
+        }
+        this.hayComestibleCerca = comestibleCerca;
+        this.hayFantasmaNoComestiblePegado = noComestiblePegado;
+
+        int enLair = 0;
+        for (GHOST g : GHOST.values())
+            if (game.getGhostLairTime(g) > 0) enLair++;
+
+        this.hayPowerPillYFantasmas =
+                game.getActivePowerPillsIndices().length > 0
+                && enLair >= GHOST.values().length;
+    }
+
+    public boolean hayComestibleCerca()            { return hayComestibleCerca; }
+    public boolean hayFantasmaNoComestiblePegado() { return hayFantasmaNoComestiblePegado; }
+    public boolean hayPowerPillYFantasmas()        { return hayPowerPillYFantasmas; }
+}
+HannaXD54 — 18:21
+que me sale algunas veces asi la pantalla
+Imagen
+Guiller_Ram — 18:23
+===== PACMAN V0 =====
+GHOST V0 | Media: 6635.4 | Min: 1370.0 | Max: 15420.0 | Desv.: 3257.814598651015 | N: 50
+GHOST V0 Ticks | Media: 2176.64 | Min: 79.0 | Max: 4001.0 | Desv.: 1461.0331647746498 | N: 50
+
+===== PACMAN V2 =====
+GHOST V2 | Media: 6999.8 | Min: 1610.0 | Max: 23310.0 | Desv.: 3872.0012702392924 | N: 50
+GHOST V2 Ticks | Media: 2144.62 | Min: 103.0 | Max: 4001.0 | Desv.: 1489.957592739896 | N: 50
+
+===== COMPARACIÓN V0 vs V1 =====
+
+Métrica: GHOST V0
+Media V0: 6635.4
+Media V1: 6999.8
+Diferencia V1 - V0: 364.40000000000055
+Error típico de la diferencia: 715.6221041292446
+Diferencia / error típico: 0.5092073007490393
+
+Métrica: GHOST V0 Ticks
+Media V0: 2176.64
+Media V1: 2144.62
+Diferencia V1 - V0: -32.01999999999998
+Error típico de la diferencia: 295.11325069317695
+Diferencia / error típico: 0.108500719384134
+HannaXD54 — 18:21
+se crasea discord xd
+----------------------------------------
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import pacman.controllers.PacmanController;
+import pacman.game.Constants.MOVE;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+import pacman.game.GameView;
+import java.awt.Color;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+
+import es.ucm.fdi.ici.fsm.FSM;
+import es.ucm.fdi.ici.fsm.Transition;
+
+public class MsPacManV3 extends PacmanController {
+
+    // ================= PARÁMETROS =================
+    public static final int CERCA               = 30;
+    public static final int HOLGURA             = 6; // Se mantiene para los cálculos de coste
+    public static final int PROFUNDIDAD_SEGURA  = 5;
+    public static final boolean DEBUG           = false;
+
+    public static final double PELIGRO_BASE       = 500.0;
+    public static final double APETITO_BASE       = 100.0;
+    public static final double COSTE_INALCANZABLE = 100_000.0;
+    public static final double PESO_DISTANCIA     = 1.0;
+    public static final double PESO_PELIGRO       = 1.0;
+    public static final double PESO_CALLEJON      = 80.0;
+    public static final double PESO_POWER_PILL    = 1.5;
+
+    // ================= ESTADO =================
+    private int      nNodos;
+    private double[] dist, peligro, apetito, coste, callejon;
+    private int[]    grado;
+
+    private FSM fsm;
+    private MsPacManState stateNormal, stateCaza, statePower, stateHuida;
+
+    // ================= CONSTRUCTOR =================
+    public MsPacManV3() { construirFSM(); }
+
+    private void construirFSM() {
+        fsm = new FSM("MsPacManFSM");
+
+        stateNormal = new MsPacManState(Fase.NORMAL, this);
+        stateCaza   = new MsPacManState(Fase.CAZA,   this);
+        statePower  = new MsPacManState(Fase.POWER,  this);
+        stateHuida  = new MsPacManState(Fase.HUIDA,  this);
+
+        // --- TRANSICIONES (Lógica de Memoria / Histéresis) ---
+        
+        // 1. Hacia HUIDA (Entrada: umbral 6, usando hayFantasmaPegado)
+        fsm.add(stateNormal, (Transition) in -> ((MsPacManInput) in).hayFantasmaPegado(),  stateHuida);
+        fsm.add(stateNormal, (Transition) in -> ((MsPacManInput) in).hayComestibleCerca(), stateCaza);
+        fsm.add(stateNormal, (Transition) in -> ((MsPacManInput) in).hayPowerPillYFantasmas(), statePower);
+        
+        fsm.add(stateCaza,   (Transition) in -> ((MsPacManInput) in).hayFantasmaPegado(),  stateHuida);
+        fsm.add(stateCaza,   (Transition) in -> !((MsPacManInput) in).hayComestibleCerca(), stateNormal);
+
+        fsm.add(statePower,  (Transition) in -> ((MsPacManInput) in).hayComestibleCerca(), stateCaza);
+        fsm.add(statePower,  (Transition) in -> !((MsPacManInput) in).hayPowerPillYFantasmas(), stateNormal);
+        fsm.add(statePower,  (Transition) in -> ((MsPacManInput) in).hayFantasmaPegado(),  stateHuida);
+
+        // 2. Salida de HUIDA (Usando el nuevo umbral 10, hayFantasmaCerca)
+        fsm.add(stateHuida,  (Transition) in -> ((MsPacManInput) in).hayComestibleCerca(),   stateCaza);
+        // Solo salimos a NORMAL si NO hay fantasmas en el radio de 10
+        fsm.add(stateHuida,  (Transition) in -> !((MsPacManInput) in).hayFantasmaCerca(),    stateNormal);
+
+        fsm.ready(stateNormal);
+    }
+
+    // ================= PRE-COMPUTE =================
+    @Override
+    public void preCompute(String opponent) { fsm.reset(); }
+
+    // ================= BUCLE PRINCIPAL =================
+    @Override
+    public MOVE getMove(Game game, long timeDue) {
+        asegurarBuffers(game);
+        MsPacManInput in = new MsPacManInput(game);
+        return fsm.run(in);
+    }
+
+    // ================= LÓGICA DE COSTE Y MOVIMIENTO =================
+    public MOVE decidir(Game game, Fase fase) {
+        int nodo = game.getPacmanCurrentNodeIndex();
+        MOVE last = game.getPacmanLastMoveMade();
+        MOVE[] opciones = game.getPossibleMoves(nodo, last);
+
+        calcularDistanciasPildoras(game);
+        calcularPeligroYApetito(game);
+        calcularCallejones(game);
+        combinarCoste(fase);
+
+        if (DEBUG) dibujarCostes(game);
+
+        if (opciones.length == 1) return opciones[0];
+        return decidirConLookahead(game, nodo, last, opciones, fase);
+    }
+... (208 líneas restantes)
+
+message.txt
+14 KB
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import es.ucm.fdi.ici.fsm.State;
+import pacman.game.Constants.MOVE;
+import pacman.game.Game;
+
+public class MsPacManState implements State {
+
+    private final Fase fase;
+    private final MsPacManV3 controller; // <-- Ahora apunta a V3
+
+    public MsPacManState(Fase fase, MsPacManV3 controller) {
+        this.fase = fase;
+        this.controller = controller;
+    }
+
+    public Fase getFase() { return fase; }
+
+    public boolean esHuida() { return this.fase == Fase.HUIDA; } // <-- NUEVO
+
+    @Override
+    public MOVE execute(Input in) {
+        Game game = ((MsPacManInput) in).getGame();
+        return controller.decidir(game, fase);
+    }
+
+    @Override
+    public void stop() { }
+
+    @Override
+    public String toString() { return fase.name(); }
+}
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+
+public class MsPacManInput extends Input {
+
+    public static final int CERCA                   = 30;
+    public static final int HOLGURA_ENTRADA_HUIDA   = 6;
+    public static final int HOLGURA_SALIDA_HUIDA    = 10; // <-- Nuevo umbral de salida
+
+    private boolean hayComestibleCerca;
+    private boolean hayFantasmaPegado;      // <= 6 (para entrar)
+    private boolean hayFantasmaCerca;       // <= 10 (para salir)
+    private boolean hayPowerPillYFantasmas;
+
+    public MsPacManInput(Game game) { super(game); }
+
+    @Override
+    public void parseInput() {
+        int nodoPacman = game.getPacmanCurrentNodeIndex();
+        boolean comestibleCerca = false;
+        boolean pegado = false;
+        boolean cerca = false;
+
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) continue;
+            int ng = game.getGhostCurrentNodeIndex(g);
+            if (ng == -1) continue;
+            int d = game.getShortestPathDistance(nodoPacman, ng);
+            
+            if (game.isGhostEdible(g)) {
+                if (d >= 0 && d <= CERCA) comestibleCerca = true;
+            } else {
+                if (d >= 0 && d <= HOLGURA_ENTRADA_HUIDA) pegado = true;
+                if (d >= 0 && d <= HOLGURA_SALIDA_HUIDA) cerca = true;
+            }
+        }
+        this.hayComestibleCerca = comestibleCerca;
+        this.hayFantasmaPegado = pegado;
+        this.hayFantasmaCerca = cerca;
+
+        int enLair = 0;
+        for (GHOST g : GHOST.values())
+            if (game.getGhostLairTime(g) > 0) enLair++;
+
+        this.hayPowerPillYFantasmas =
+                game.getActivePowerPillsIndices().length > 0
+                && enLair >= GHOST.values().length;
+    }
+
+    public boolean hayComestibleCerca()            { return hayComestibleCerca; }
+    public boolean hayFantasmaPegado()             { return hayFantasmaPegado; }
+    public boolean hayFantasmaCerca()              { return hayFantasmaCerca; }
+    public boolean hayPowerPillYFantasmas()        { return hayPowerPillYFantasmas; }
+}
+
+message.txt
+3 KB
+----------------------------------------------------
+﻿
+HannaXD54 — 18:02
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import es.ucm.fdi.ici.fsm.State;
+import pacman.game.Constants.MOVE;
+import pacman.game.Game;
+
+public class MsPacManState implements State {
+
+    public enum Fase { NORMAL, CAZA, POWER, HUIDA }
+
+    private final Fase fase;
+    private final MsPacManV2 controller;
+
+    public MsPacManState(Fase fase, MsPacManV2 controller) {
+        this.fase = fase;
+        this.controller = controller;
+    }
+
+    public Fase getFase() { return fase; }
+
+    @Override
+    public MOVE execute(Input in) {
+        Game game = ((MsPacManInput) in).getGame();
+        return controller.decidir(game, fase);
+    }
+
+    @Override
+    public void stop() {
+        // Nada que hacer: no guardamos estado entre turnos.
+    }
+
+    @Override
+    public String toString() { return fase.name(); }
+}
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import pacman.controllers.PacmanController;
+import pacman.game.Constants.MOVE;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+
+message.txt
+14 KB
+package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+
+import es.ucm.fdi.ici.Input;
+import pacman.game.Constants.GHOST;
+import pacman.game.Game;
+
+public class MsPacManInput extends Input {
+
+    public static final int CERCA                   = 30;
+    public static final int HOLGURA_ENTRADA_HUIDA   = 6;
+    public static final int HOLGURA_SALIDA_HUIDA    = 10; // <-- Nuevo umbral de salida
+
+    private boolean hayComestibleCerca;
+    private boolean hayFantasmaPegado;      // <= 6 (para entrar)
+    private boolean hayFantasmaCerca;       // <= 10 (para salir)
+    private boolean hayPowerPillYFantasmas;
+
+    public MsPacManInput(Game game) { super(game); }
+
+    @Override
+    public void parseInput() {
+        int nodoPacman = game.getPacmanCurrentNodeIndex();
+        boolean comestibleCerca = false;
+        boolean pegado = false;
+        boolean cerca = false;
+
+        for (GHOST g : GHOST.values()) {
+            if (game.getGhostLairTime(g) > 0) continue;
+            int ng = game.getGhostCurrentNodeIndex(g);
+            if (ng == -1) continue;
+            int d = game.getShortestPathDistance(nodoPacman, ng);
+            
+            if (game.isGhostEdible(g)) {
+                if (d >= 0 && d <= CERCA) comestibleCerca = true;
+            } else {
+                if (d >= 0 && d <= HOLGURA_ENTRADA_HUIDA) pegado = true;
+                if (d >= 0 && d <= HOLGURA_SALIDA_HUIDA) cerca = true;
+            }
+        }
+        this.hayComestibleCerca = comestibleCerca;
+        this.hayFantasmaPegado = pegado;
+        this.hayFantasmaCerca = cerca;
+
+        int enLair = 0;
+        for (GHOST g : GHOST.values())
+            if (game.getGhostLairTime(g) > 0) enLair++;
+
+        this.hayPowerPillYFantasmas =
+                game.getActivePowerPillsIndices().length > 0
+                && enLair >= GHOST.values().length;
+    }
+
+    public boolean hayComestibleCerca()            { return hayComestibleCerca; }
+    public boolean hayFantasmaPegado()             { return hayFantasmaPegado; }
+    public boolean hayFantasmaCerca()              { return hayFantasmaCerca; }
+    public boolean hayPowerPillYFantasmas()        { return hayPowerPillYFantasmas; }
+}
