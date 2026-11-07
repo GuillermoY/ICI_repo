@@ -6,14 +6,17 @@ import pacman.game.Constants.GHOST;
 import pacman.game.Game;
 import pacman.game.GameView;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 
 import es.ucm.fdi.ici.fsm.FSM;
 import es.ucm.fdi.ici.fsm.Transition;
+import es.ucm.fdi.ici.fsm.observers.*;
 import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState;
 import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState.Fase;
+import java.awt.Dimension;
 
 public class MsPacManV3Me extends MsPacManBase {
 
@@ -37,6 +40,7 @@ public class MsPacManV3Me extends MsPacManBase {
     private int[]    grado;
 
     private FSM fsm;
+    private GraphFSMObserver grafo;
     private MsPacManState stateNormal, stateCaza, statePower, stateHuida;
 
     // ================= CONSTRUCTOR =================
@@ -45,31 +49,50 @@ public class MsPacManV3Me extends MsPacManBase {
     private void construirFSM() {
         fsm = new FSM("MsPacManFSM");
 
+        grafo = new GraphFSMObserver("MsPacManV3Me");
+        fsm.addObserver(grafo);
+
         stateNormal = new MsPacManState(Fase.NORMAL, this);
-        stateCaza   = new MsPacManState(Fase.CAZA,   this);
-        statePower  = new MsPacManState(Fase.POWER,  this);
-        stateHuida  = new MsPacManState(Fase.HUIDA,  this);
+        stateCaza   = new MsPacManState(Fase.CAZA, this);
+        statePower  = new MsPacManState(Fase.POWER, this);
+        stateHuida  = new MsPacManState(Fase.HUIDA, this);
 
-        // --- TRANSICIONES (Lógica de Memoria / Histéresis) ---
-        
-        // 1. Hacia HUIDA (Entrada: umbral 6, usando hayFantasmaPegado)
-        fsm.add(stateNormal, (Transition) in -> ((MsPacManInput) in).hayFantasmaNoComestiblePegado(),  stateHuida);
-        fsm.add(stateNormal, (Transition) in -> ((MsPacManInput) in).hayComestibleCerca(), stateCaza);
-        fsm.add(stateNormal, (Transition) in -> ((MsPacManInput) in).hayPowerPillYFantasmas(), statePower);
-        
-        fsm.add(stateCaza,   (Transition) in -> ((MsPacManInput) in).hayFantasmaNoComestiblePegado(),  stateHuida);
-        fsm.add(stateCaza,   (Transition) in -> !((MsPacManInput) in).hayComestibleCerca(), stateNormal);
+        // TRANSICIONES
+        fsm.add(stateNormal, (Transition) in ->
+                ((MsPacManInput) in).hayFantasmaNoComestiblePegado(), stateHuida);
 
-        fsm.add(statePower,  (Transition) in -> ((MsPacManInput) in).hayComestibleCerca(), stateCaza);
-        fsm.add(statePower,  (Transition) in -> !((MsPacManInput) in).hayPowerPillYFantasmas(), stateNormal);
-        fsm.add(statePower,  (Transition) in -> ((MsPacManInput) in).hayFantasmaNoComestiblePegado(),  stateHuida);
+        fsm.add(stateNormal, (Transition) in ->
+                ((MsPacManInput) in).hayComestibleCerca(), stateCaza);
 
-        // 2. Salida de HUIDA (Usando el nuevo umbral 10, hayFantasmaCerca)
-        fsm.add(stateHuida,  (Transition) in -> ((MsPacManInput) in).hayComestibleCerca(),   stateCaza);
-        // Solo salimos a NORMAL si NO hay fantasmas en el radio de 10
-        fsm.add(stateHuida,  (Transition) in -> !((MsPacManInput) in).hayFantasmaCerca(),    stateNormal);
+        fsm.add(stateNormal, (Transition) in ->
+                ((MsPacManInput) in).hayPowerPillYFantasmas(), statePower);
 
+        fsm.add(stateCaza, (Transition) in ->
+                ((MsPacManInput) in).hayFantasmaNoComestiblePegado(), stateHuida);
+
+        fsm.add(stateCaza, (Transition) in ->
+                !((MsPacManInput) in).hayComestibleCerca(), stateNormal);
+
+        fsm.add(statePower, (Transition) in ->
+                ((MsPacManInput) in).hayComestibleCerca(), stateCaza);
+
+        fsm.add(statePower, (Transition) in ->
+                !((MsPacManInput) in).hayPowerPillYFantasmas(), stateNormal);
+
+        fsm.add(statePower, (Transition) in ->
+                ((MsPacManInput) in).hayFantasmaNoComestiblePegado(), stateHuida);
+
+        fsm.add(stateHuida, (Transition) in ->
+                ((MsPacManInput) in).hayComestibleCerca(), stateCaza);
+
+        fsm.add(stateHuida, (Transition) in ->
+                !((MsPacManInput) in).hayFantasmaCerca(), stateNormal);
+
+        // Inicializar FSM
         fsm.ready(stateNormal);
+
+        // Mostrar grafo
+        grafo.showInFrame(new Dimension(500, 350));
     }
 
     // ================= PRE-COMPUTE =================

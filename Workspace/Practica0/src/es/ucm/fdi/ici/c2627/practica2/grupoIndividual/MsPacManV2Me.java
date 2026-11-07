@@ -6,14 +6,18 @@ import pacman.game.Constants.GHOST;
 import pacman.game.Game;
 import pacman.game.GameView;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 
 import es.ucm.fdi.ici.fsm.FSM;
 import es.ucm.fdi.ici.fsm.Transition;
+import es.ucm.fdi.ici.fsm.observers.*;
+import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.*;
 import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState;
 import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState.Fase;
+import java.awt.Dimension;
 
 public class MsPacManV2Me extends MsPacManBase {
 
@@ -37,6 +41,7 @@ public class MsPacManV2Me extends MsPacManBase {
     private int[]    grado;
 
     private FSM fsm;
+    private GraphFSMObserver grafo;
     private MsPacManState stateNormal, stateCaza, statePower, stateHuida;
 
     // ================= CONSTRUCTOR =================
@@ -45,6 +50,9 @@ public class MsPacManV2Me extends MsPacManBase {
     private void construirFSM() {
         fsm = new FSM("MsPacManFSM");
 
+        grafo = new GraphFSMObserver("MsPacManV2Me");
+        fsm.addObserver(grafo);
+        
         stateNormal = new MsPacManState(Fase.NORMAL, this);
         stateCaza   = new MsPacManState(Fase.CAZA,   this);
         statePower  = new MsPacManState(Fase.POWER,  this);
@@ -63,8 +71,11 @@ public class MsPacManV2Me extends MsPacManBase {
 
         fsm.add(stateHuida,  (Transition) in -> ((MsPacManInput) in).hayComestibleCerca(),             stateCaza);
         fsm.add(stateHuida,  (Transition) in -> !((MsPacManInput) in).hayFantasmaNoComestiblePegado(), stateNormal);
+        
 
         fsm.ready(stateNormal);
+
+        grafo.showInFrame(new Dimension(500, 350));
     }
 
     // ================= PRE-COMPUTE =================

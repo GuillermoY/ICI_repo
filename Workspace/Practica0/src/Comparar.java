@@ -43,7 +43,7 @@ public class Comparar {
     	MIS_PACMANS.put("v2", () -> new MsPacManV2Me());
     	
         MIS_FANTASMAS.put("v0", () -> new GhostsV0Me());       // G1 y G2
-        MIS_FANTASMAS.put("v2", () -> new GhostsV2Me());       // con G3
+        MIS_FANTASMAS.put("v1", () -> new GhostsV1());       // con G3
 
         // Si queréis más rivales, aquí, y desde el principio: los mismos para todas las versiones.
         // RIVALES_FANTASMAS.put("P2 nuestros", es.ucm.fdi.ici.c2627.practica2.grupoYY.Ghosts::new);
