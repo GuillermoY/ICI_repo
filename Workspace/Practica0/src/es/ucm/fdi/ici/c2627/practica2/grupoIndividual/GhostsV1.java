@@ -125,12 +125,6 @@ public class GhostsV1 extends GhostController {
         }
     }
 
-    // =================================================================
-    // AQUÍ PEGAS TUS MÉTODOS ORIGINALES DE V0Me: segunSuPapel, 
-    // primerMovimientoDe, proximoCruceDe, huirConCriterio, 
-    // movimientoAleatorioLegal, movimientoDispersar y puntuacionDispersion.
-    // =================================================================
-    
     private MOVE segunSuPapel(Game game, GHOST f) {
         int  nodo    = game.getGhostCurrentNodeIndex(f);
         MOVE ultimo  = game.getGhostLastMoveMade(f);
