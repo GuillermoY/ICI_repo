@@ -1,4 +1,4 @@
-package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+package es.ucm.fdi.ici.c2627.practica2.GIRM_LC;
 
 import java.util.EnumMap;
 import pacman.controllers.GhostController;
@@ -7,7 +7,7 @@ import pacman.game.Constants.MOVE;
 import pacman.game.Constants.DM;
 import pacman.game.Game;
 import es.ucm.fdi.ici.fsm.*;
-import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.GhostsState.FaseG;
+import es.ucm.fdi.ici.c2627.practica2.GIRM_LC.GhostsState.FaseG;
 import java.awt.Dimension;
 import es.ucm.fdi.ici.fsm.observers.*;
 

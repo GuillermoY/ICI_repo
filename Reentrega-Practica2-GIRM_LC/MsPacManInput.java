@@ -1,4 +1,4 @@
-package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+package es.ucm.fdi.ici.c2627.practica2.GIRM_LC;
 
 import es.ucm.fdi.ici.Input;
 import pacman.game.Constants.GHOST;

@@ -2,3 +2,5 @@ Guillermo Isaac Ramos Medina
 Liling Chen
 
 Se entrega GhostsV1 y MsPacManV3Me
+Entregamos estas porque la media aumentó significativamente respecto a otras versiones,
+además de que implementan correctamente la máquina de estados.

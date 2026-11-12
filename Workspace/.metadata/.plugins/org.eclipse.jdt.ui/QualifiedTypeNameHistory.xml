@@ -16,4 +16,6 @@
     <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState.Fase"/>
     <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManV0Me"/>
     <fullyQualifiedTypeName name="es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManV2Me"/>
+    <fullyQualifiedTypeName name="es.ucm.fdi.ici.fsm.FSMObserver"/>
+    <fullyQualifiedTypeName name="pacman.controllers.GhostController"/>
 </qualifiedTypeNameHistroy>

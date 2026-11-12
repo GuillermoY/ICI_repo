@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.*;
+import es.ucm.fdi.ici.c2627.practica2.GIRM_LC.*;
 import es.ucm.fdi.ici.rivales.*;
 import pacman.controllers.GhostController;
 import pacman.controllers.PacmanController;

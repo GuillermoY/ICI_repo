@@ -1,4 +1,4 @@
-package es.ucm.fdi.ici.c2627.practica2.grupoIndividual;
+package es.ucm.fdi.ici.c2627.practica2.GIRM_LC;
 
 import pacman.controllers.PacmanController;
 import pacman.game.Constants.MOVE;
@@ -14,9 +14,9 @@ import java.util.Deque;
 import es.ucm.fdi.ici.fsm.FSM;
 import es.ucm.fdi.ici.fsm.Transition;
 import es.ucm.fdi.ici.fsm.observers.*;
-import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.*;
-import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState;
-import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.MsPacManState.Fase;
+import es.ucm.fdi.ici.c2627.practica2.GIRM_LC.*;
+import es.ucm.fdi.ici.c2627.practica2.GIRM_LC.MsPacManState;
+import es.ucm.fdi.ici.c2627.practica2.GIRM_LC.MsPacManState.Fase;
 import java.awt.Dimension;
 
 public class MsPacManV2Me extends MsPacManBase {

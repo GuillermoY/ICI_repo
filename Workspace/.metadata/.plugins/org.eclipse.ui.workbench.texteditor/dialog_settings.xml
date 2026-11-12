@@ -9,23 +9,28 @@
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="parse"/>
+			<item value="GETMO"/>
+			<item value="parsein"/>
+			<item value="int nodo = game.getGhostCurrentNodeIndex("/>
+			<item value="f"/>
+			<item value="INT NODO ="/>
+			<item value="currentNodeIndex"/>
+			<item value="GhostInput"/>
+			<item value="GhostSState"/>
+			<item value="GhostState"/>
+			<item value="GhostsV1Me"/>
 			<item value="files"/>
 			<item value="MsPacManV"/>
 			<item value="sPacManV2"/>
 			<item value="MsPacManV1Me"/>
-			<item value="detectar"/>
-			<item value="DETECTAR"/>
-			<item value="costes"/>
-			<item value="decidircon"/>
-			<item value="MsPacManV0Me"/>
-			<item value="combi"/>
-			<item value="MOVIMIENTOAL"/>
-			<item value="PRIMERMO"/>
-			<item value="proximoCruceDe"/>
-			<item value="movimientoDispersar"/>
-			<item value="HUIRC"/>
 		</list>
 		<list key="replacehistory">
+			<item value="fantasma"/>
+			<item value="GhostsInput"/>
+			<item value="GhostsState"/>
+			<item value="GhostSState"/>
+			<item value="GhostsV1"/>
 			<item value="MsPacManV2Me"/>
 			<item value="FaseG"/>
 			<item value="FaseP"/>

@@ -1,4 +1,4 @@
-import es.ucm.fdi.ici.c2627.practica2.grupoIndividual.*;
+import es.ucm.fdi.ici.c2627.practica2.GIRM_LC.*;
 import pacman.controllers.*;
 import pacman.Executor;
 import pacman.controllers.PacmanController;
